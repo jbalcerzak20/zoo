@@ -1,20 +1,22 @@
 package controllers;
 
 import animals.Zwierze;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import loaders.ZooLoader;
+import neurons.Perceptron;
+
+import java.util.Arrays;
 
 public class MainController {
     private Stage stage;
     private ZooLoader zooLoader;
+    private Perceptron perceptron;
     private ObservableList<Zwierze> zwierzes;
     private TableColumn<String,String > kolumnaNazwa;
     private TableColumn<String,String> kolumnaSiersc;
@@ -51,13 +53,8 @@ public class MainController {
     public void initialize()
     {
         zooLoader = new ZooLoader();
+        perceptron = new Perceptron();
         iniciowanieKolumn();
-
-
-
-
-
-
         ustawDaneUczace();
     }
 
@@ -79,7 +76,7 @@ public class MainController {
         kolumnaNogi = new TableColumn<>("Nogi");
         kolumnaOgon = new TableColumn<>("Ogon");
         kolumnaDomowy = new TableColumn<>("Domowy");
-        kolumnaRozmiarKota = new TableColumn<>("Rozmiar kota");
+        kolumnaRozmiarKota = new TableColumn<>("Catsize");
         kolumnaTyp = new TableColumn<>("Typ");
 
         kolumnaNazwa.setCellValueFactory(new PropertyValueFactory<>("nazwa"));
@@ -127,6 +124,48 @@ public class MainController {
     {
         zwierzes = zooLoader.wczytajPlik(getClass().getResource("/dane/zoo.data").getFile());
         daneUczace.getItems().addAll(zwierzes);
+
+        perceptronTest();
+    }
+
+    private void perceptronTest()
+    {
+        double[][]b = {{1,0.1,0.9},{1,1,0.1}};
+
+        double[]wy = {1,0};
+        int K = 2;
+        int k = 1;
+        int lpd = 0;
+        double n = 0.2;
+        double[] wagi = {0.1,-0.1,-0.2};
+        double y = 0;
+        int it = 0;
+
+        while(lpd!=K)
+        {
+            System.out.println("Iteracja nr "+it);
+            System.out.println(Arrays.toString(b[k-1]));
+            y = perceptron.funkcjaSkoku(perceptron.sumujNeurony(b[k-1],wagi));
+            perceptron.adaptujWagizMomentem(b[k-1],wagi,n,wy[k-1],y,0,null);
+            System.out.println("y="+y);
+
+            if(y == wy[k-1])
+            {
+                lpd++;
+            }
+
+            k++;
+
+            if(k>K)
+            {
+                k=1;
+            }
+            System.out.println(Arrays.toString(wagi)+" ||"+lpd);
+            System.out.println("=====================");
+            it++;
+        }
+
+
     }
 
 
