@@ -1,27 +1,48 @@
 package neurons;
 
 import java.lang.reflect.Array;
+import java.util.Random;
 
 public class Perceptron {
 
+    private double[]weights;
+    private Random random;
+    private double lt; //wspolczynnik uczenia
 
     public Perceptron()
     {
-
+        random = new Random();
     }
 
-    public double sumujNeurony(double[]xn, double[]wagi)
+    public Perceptron(int n)
     {
-        double suma = 0.0;
+        this();
+        weights = new double[n];
 
-       if(xn.length != wagi.length)
-           return -1000;
+//        for(int i=0;i<weights.length;i++)
+//        {
+//            weights[i] = random.nextFloat();
+//        }
+    }
 
-       for(int i=0;i<xn.length;i++)
+    public Perceptron(int n, double lt)
+    {
+        this(n);
+        this.lt = lt;
+    }
+
+    public double sums(double[]inputs)
+    {
+       float suma = 0;
+
+       if(inputs.length != weights.length)
+           return 0;
+
+
+       for(int i=0;i<inputs.length;i++)
        {
-           suma+=(xn[i]*wagi[i]);
+           suma+=(inputs[i]*weights[i]);
        }
-
 
         return suma;
     }
@@ -35,14 +56,14 @@ public class Perceptron {
             return 0;
     }
 
-    public void adaptujWagizMomentem(final double[]xn, double[]wagi, final double wspUczenia, final double pozadana, final double faktyczna, final double wspMomentu, double[]wczWagi)
+    public void adaptujWagizMomentem(final double[]xn, final double pozadana, final double faktyczna, final double wspMomentu, double[]wczWagi)
     {
         if(pozadana == faktyczna){ return; }
 
-        double[]propagacja = new double[wagi.length];
+        double[]propagacja = new double[weights.length];
 //        double[]moment = new double[wagi.length];
 //        double[]momentNew = wagi.clone();
-        double blad = (pozadana - faktyczna)*wspUczenia;
+        double blad = (pozadana - faktyczna)*lt;
         for(int i=0;i<xn.length;i++)
         {
             propagacja[i]=xn[i]*blad;
@@ -54,7 +75,7 @@ public class Perceptron {
 //        {
             for (int i = 0; i < xn.length; i++) {
 //            propagacja[i]=wagi[i]+propagacja[i];
-                wagi[i]=wagi[i]+propagacja[i];
+                weights[i]=weights[i]+propagacja[i];
             }
 //        }
 
@@ -76,5 +97,22 @@ public class Perceptron {
 //            wagi[i]= wagi[i]+moment[i];
 //        }
 //        wczWagi = momentNew.clone();
+    }
+
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;
+    }
+
+    public double getLt() {
+        return lt;
+    }
+
+    public void setLt(double lt) {
+        this.lt = lt;
     }
 }

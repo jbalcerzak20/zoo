@@ -53,7 +53,7 @@ public class MainController {
     public void initialize()
     {
         zooLoader = new ZooLoader();
-        perceptron = new Perceptron();
+        perceptron = new Perceptron(3);
         iniciowanieKolumn();
         ustawDaneUczace();
     }
@@ -136,17 +136,18 @@ public class MainController {
         int K = 2;
         int k = 1;
         int lpd = 0;
-        double n = 0.2;
         double[] wagi = {0.1,-0.1,-0.2};
         double y = 0;
         int it = 0;
+        perceptron.setWeights(wagi);
+        perceptron.setLt(0.2);
 
         while(lpd!=K)
         {
             System.out.println("Iteracja nr "+it);
             System.out.println(Arrays.toString(b[k-1]));
-            y = perceptron.funkcjaSkoku(perceptron.sumujNeurony(b[k-1],wagi));
-            perceptron.adaptujWagizMomentem(b[k-1],wagi,n,wy[k-1],y,0,null);
+            y = perceptron.funkcjaSkoku(perceptron.sums(b[k-1]));
+            perceptron.adaptujWagizMomentem(b[k-1],wy[k-1],y,0,null);
             System.out.println("y="+y);
 
             if(y == wy[k-1])
