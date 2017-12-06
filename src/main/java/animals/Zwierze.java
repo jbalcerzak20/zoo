@@ -21,6 +21,7 @@ public class Zwierze {
     private BooleanProperty domowy = new SimpleBooleanProperty();
     private BooleanProperty rozmiarKota = new SimpleBooleanProperty();
     private IntegerProperty typ = new SimpleIntegerProperty(); //1..7
+    private Rodzaj rodzaj = null;
 
 
     private Zwierze()
@@ -247,7 +248,18 @@ public class Zwierze {
     }
 
     public void setTyp(int typ) {
+
         this.typ.set(typ);
+        setRodzaj(Rodzaj.getKlase(typ));
+    }
+
+
+    public Rodzaj getRodzaj() {
+        return rodzaj;
+    }
+
+    public void setRodzaj(Rodzaj rodzaj) {
+        this.rodzaj = rodzaj;
     }
 
     @Override

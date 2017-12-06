@@ -1,104 +1,83 @@
 package neurons;
 
-import java.lang.reflect.Array;
-import java.util.Random;
+import animals.Zwierze;
+import javafx.collections.ObservableList;
 
-public class Perceptron {
+import java.util.Arrays;
 
-    private double[]weights;
-    private Random random;
+public class Perceptron extends Macierz {
+
+    private double[] weights;    //wagi
+    private double[] weightsOlder;   //wagi dla momentum
     private double lt; //wspolczynnik uczenia
+    private double ltm;
+    private int lpd;
+    private int maxT; //maksymalna liczba iteracji
+    private double eps; //
+    private ObservableList<Zwierze> zwierzes;
 
-    public Perceptron()
-    {
-        random = new Random();
+    public Perceptron() {
+        lpd = 0;
+        maxT = 0;
     }
 
-    public Perceptron(int n)
-    {
+    public Perceptron(int n) {
         this();
         weights = new double[n];
+        weightsOlder = new double[n];
 
-//        for(int i=0;i<weights.length;i++)
-//        {
-//            weights[i] = random.nextFloat();
-//        }
+
+        for (int i = 0; i < weightsOlder.length; i++) {
+            weightsOlder[i] = 0;
+        }
     }
 
-    public Perceptron(int n, double lt)
-    {
+    public Perceptron(int n, double lt) {
         this(n);
         this.lt = lt;
     }
 
-    public double sums(double[]inputs)
-    {
-       float suma = 0;
+    public Perceptron(int n, double lt, double ltm) {
+        this(n, lt);
+        this.ltm = ltm;
+    }
 
-       if(inputs.length != weights.length)
-           return 0;
+    public double sums(double[] inputs) {
+        float suma = 0;
+
+        if (inputs.length != weights.length)
+            return 0;
 
 
-       for(int i=0;i<inputs.length;i++)
-       {
-           suma+=(inputs[i]*weights[i]);
-       }
+        for (int i = 0; i < inputs.length; i++) {
+            suma += (inputs[i] * weights[i]);
+        }
 
         return suma;
     }
 
-    public double funkcjaSkoku(double u)
-    {
-        System.out.println("u="+u);
-        if(u>=0)
-            return 1;
-        else
-            return 0;
-    }
 
-    public void adaptujWagizMomentem(final double[]xn, final double pozadana, final double faktyczna, final double wspMomentu, double[]wczWagi)
-    {
-        if(pozadana == faktyczna){ return; }
+    public void teach() {
+        int pt = 0;
+        double[][] res;
+        while (true) {
+            res = activation(multiplyWeightsInputs()); //odpowiedz siec
 
-        double[]propagacja = new double[weights.length];
-//        double[]moment = new double[wagi.length];
-//        double[]momentNew = wagi.clone();
-        double blad = (pozadana - faktyczna)*lt;
-        for(int i=0;i<xn.length;i++)
-        {
-            propagacja[i]=xn[i]*blad;
+            if(isEqual(res))
+                break;
+
+            if(pt>1000)
+                break;
+
+            double[][] errors = errors(res);
+            updateWeigths(errors,lt,ltm);
+            pt++;
         }
-
-
-
-//        if(pozadana == 1 && faktyczna ==0)
-//        {
-            for (int i = 0; i < xn.length; i++) {
-//            propagacja[i]=wagi[i]+propagacja[i];
-                weights[i]=weights[i]+propagacja[i];
-            }
-//        }
-
-//        if(pozadana == 0 && faktyczna == 1)
-//        {
-//            for (int i = 0; i < xn.length; i++) {
-////            propagacja[i]=wagi[i]+propagacja[i];
-//                wagi[i]=wagi[i]-propagacja[i];
-//            }
-//        }
-
-        //=======moment==========================//
-//        for (int i = 0; i <moment.length ; i++) {
-//            moment[i]=wspMomentu*(wagi[i]-wczWagi[i]);
-//        }
-
-        //====nowe wagi==========
-//        for (int i = 0; i <wagi.length ; i++) {
-//            wagi[i]= wagi[i]+moment[i];
-//        }
-//        wczWagi = momentNew.clone();
+        for (int i = 0; i < res.length; i++) {
+            System.out.println(Arrays.toString(res[i]));
+        }
+        System.out.println("Numer iteracji: "+pt);
     }
-
 
     public double[] getWeights() {
         return weights;
@@ -114,5 +93,38 @@ public class Perceptron {
 
     public void setLt(double lt) {
         this.lt = lt;
+    }
+
+    public double getLtm() {
+        return ltm;
+    }
+
+    public void setLtm(double ltm) {
+        this.ltm = ltm;
+    }
+
+    public int getMaxT() {
+        return maxT;
+    }
+
+    public void setMaxT(int maxT) {
+        this.maxT = maxT;
+    }
+
+    public double getEps() {
+        return eps;
+    }
+
+    public void setEps(double eps) {
+        this.eps = eps;
+    }
+
+    public ObservableList<Zwierze> getZwierzes() {
+        return zwierzes;
+    }
+
+    public void setZwierzes(ObservableList<Zwierze> zwierzes) {
+        this.zwierzes = zwierzes;
+        super.setInputs(zwierzes);
     }
 }

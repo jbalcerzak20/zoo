@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import loaders.ZooLoader;
 import neurons.Perceptron;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 public class MainController {
@@ -102,14 +103,6 @@ public class MainController {
         daneUczace.getColumns().addAll(kolumnaNazwa,kolumnaSiersc,kolumnaPiora,kolumnaJaja,kolumnaMleko,kolumnaLatajacy,kolumnaWodny,kolumnaDrapieznik,kolumnaUzebiony);
         daneUczace.getColumns().addAll(kolumnaKregoslup,kolumnaOddycha,kolumnaJadowity,kolumnaPletwy,kolumnaNogi,kolumnaOgon,kolumnaDomowy,kolumnaRozmiarKota,kolumnaTyp);
 
-
-
-
-
-        daneUczace.getColumns().forEach(item->{
-           TableColumn<String,String> s = (TableColumn)item;
-            s.setPrefWidth(90);
-        });
     }
 
     public Stage getStage() {
@@ -128,44 +121,21 @@ public class MainController {
         perceptronTest();
     }
 
+
     private void perceptronTest()
     {
-        double[][]b = {{1,0.1,0.9},{1,1,0.1}};
+        perceptron.setLt(0.02);
+        perceptron.setLtm(0.1);
+        perceptron.setMaxT(1000);
+        perceptron.setEps(0.001);
+        perceptron.setZwierzes(zwierzes); //wejscia i wagi - init dwu wymiar. tablice
+        perceptron.teach();
 
-        double[]wy = {1,0};
-        int K = 2;
-        int k = 1;
-        int lpd = 0;
-        double[] wagi = {0.1,-0.1,-0.2};
-        double y = 0;
-        int it = 0;
-        perceptron.setWeights(wagi);
-        perceptron.setLt(0.2);
+//        perceptron.teachFull(b,wy);
 
-        while(lpd!=K)
-        {
-            System.out.println("Iteracja nr "+it);
-            System.out.println(Arrays.toString(b[k-1]));
-            y = perceptron.funkcjaSkoku(perceptron.sums(b[k-1]));
-            perceptron.adaptujWagizMomentem(b[k-1],wy[k-1],y,0,null);
-            System.out.println("y="+y);
-
-            if(y == wy[k-1])
-            {
-                lpd++;
-            }
-
-            k++;
-
-            if(k>K)
-            {
-                k=1;
-            }
-            System.out.println(Arrays.toString(wagi)+" ||"+lpd);
-            System.out.println("=====================");
-            it++;
-        }
-
+//        zwierzes.forEach(item -> {
+//            System.out.println(item.getNazwa()+" "+ item.getRodzaj().getNazwa());
+//        });
 
     }
 
