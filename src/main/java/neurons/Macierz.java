@@ -4,13 +4,14 @@ import animals.Zwierze;
 import javafx.collections.ObservableList;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Random;
 
 public class Macierz {
-    private final double[][] odpOczekiwane; //101 * 7
+    private double[][] odpOczekiwane; //101 * 7
     private double[][] inputs; //101 * 17
     private double[][] weights;  // 17 * 7
     private double[][] weightsOlder;   //wagi dla momentum
@@ -26,6 +27,10 @@ public class Macierz {
                 odpOczekiwane[i][j] = 0;
             }
         }
+    }
+
+    public double normalize(double d) {
+        return ((d) / (8));
     }
 
     public void setInputs(ObservableList<Zwierze> zwierzes) {
@@ -48,11 +53,13 @@ public class Macierz {
             inputs[i][12] = boolToDouble(item.isOgon());
             inputs[i][13] = boolToDouble(item.isDomowy());
             inputs[i][14] = boolToDouble(item.isRozmiarKota());
-            inputs[i][15] = item.getNogi();
+            inputs[i][15] = normalize(item.getNogi());
             inputs[i][16] = 1;
             setOdpOczekiwane(i, item.getTyp() - 1);
             i++;
         }
+
+
         initializeWeights(); //iniciowanie wag
     }
 
@@ -119,15 +126,26 @@ public class Macierz {
 
         for (int i = 0; i < guess.length; i++) {
             for (int j = 0; j < guess[i].length; j++) {
-                if (guess[i][j] >= 0)
-                    pp[i][j] = 1;
-                else
-                    pp[i][j] = 0;
+                pp[i][j] = (1 / (1 + Math.exp(-1 * guess[i][j])));
             }
         }
+
         return pp;
 
 //        return (1/(1+Math.exp(-1*y))); // funkcja sigmoidalna
+    }
+    
+    public double summaryError(double[][] res)
+    {
+        double suma = 0;
+
+        for (int i = 0; i < res.length; i++) {
+            for (int j = 0; j < res[i].length; j++) {
+               suma+=Math.pow((res[i][j]-odpOczekiwane[i][j]),2);
+            }
+        }
+        
+        return suma/2;
     }
 
     public double[][] errors(double[][] respond) {
@@ -137,22 +155,12 @@ public class Macierz {
         return m1.subtract(m2).getData();
     }
 
-    public Boolean isEqual(double[][] res) {
-        for (int i = 0; i < res.length; i++) {
-            for (int j = 0; j < res[i].length; j++) {
-                if (res[i][j] != odpOczekiwane[i][j])
-                    return false;
-            }
-        }
-        return true;
-    }
-
     public void updateWeigths(double[][] errors, double lt, double ltm) {
         double[][] tmp = weights.clone();
 
 //           weights[i] += ((inputs[i]*error)+(ltm*(weights[i]-weightsOlder[i])));
-        double[][]part1 = multipleErrorsInputsLt(errors, lt);
-        double[][]part2 = substractWeightOlderWeight(ltm);
+        double[][] part1 = multipleErrorsInputsLt(errors, lt);
+        double[][] part2 = substractWeightOlderWeight(ltm);
 
         addToWeights(part1);
         addToWeights(part2);
@@ -164,8 +172,7 @@ public class Macierz {
         weightsOlder = tmp.clone();
     }
 
-    private double[][] substractWeightOlderWeight(double ltm)
-    {
+    private double[][] substractWeightOlderWeight(double ltm) {
         RealMatrix w1 = MatrixUtils.createRealMatrix(weights);
         RealMatrix w2 = MatrixUtils.createRealMatrix(weightsOlder);
         RealMatrix w3 = w1.subtract(w2);

@@ -3,7 +3,9 @@ package neurons;
 import animals.Zwierze;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Perceptron extends Macierz {
 
@@ -15,6 +17,7 @@ public class Perceptron extends Macierz {
     private int maxT; //maksymalna liczba iteracji
     private double eps; //
     private ObservableList<Zwierze> zwierzes;
+    private List<Double> err = new ArrayList<>();
 
     public Perceptron() {
         lpd = 0;
@@ -63,13 +66,23 @@ public class Perceptron extends Macierz {
         while (true) {
             res = activation(multiplyWeightsInputs()); //odpowiedz siec
 
-            if(isEqual(res))
+            if(pt>9000)
                 break;
 
-            if(pt>1000)
-                break;
+            err.add(summaryError(res));
+            System.out.println(err.get(err.size()-1));
+
+            if(err.size()>3)
+            {
+                if(Math.abs(err.get(err.size()-1)-err.get(err.size()-2))<eps)
+                {
+                    System.out.println("eps");
+                    break;
+                }
+            }
 
             double[][] errors = errors(res);
+
             updateWeigths(errors,lt,ltm);
             pt++;
         }
@@ -77,7 +90,9 @@ public class Perceptron extends Macierz {
             System.out.println(Arrays.toString(res[i]));
         }
         System.out.println("Numer iteracji: "+pt);
+
     }
+
 
     public double[] getWeights() {
         return weights;

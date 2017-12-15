@@ -10,6 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import loaders.ZooLoader;
 import neurons.Perceptron;
+import neurons.hidden.Layer;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -124,19 +125,25 @@ public class MainController {
 
     private void perceptronTest()
     {
-        perceptron.setLt(0.02);
+        perceptron.setLt(0.2);
         perceptron.setLtm(0.1);
         perceptron.setMaxT(1000);
-        perceptron.setEps(0.001);
+        perceptron.setEps(0.00001);
         perceptron.setZwierzes(zwierzes); //wejscia i wagi - init dwu wymiar. tablice
-        perceptron.teach();
+//        perceptron.teach();
 
-//        perceptron.teachFull(b,wy);
 
-//        zwierzes.forEach(item -> {
-//            System.out.println(item.getNazwa()+" "+ item.getRodzaj().getNazwa());
-//        });
+        neurons.hidden.Perceptron p2 = new neurons.hidden.Perceptron();
+        p2.setZwierzes(zwierzes);
+        p2.setIloscDanychUczacych(70);
+        p2.setMaxIteration(100);
+        p2.setEpsilon(0.0001);
+        p2.teach();
 
+
+//        for (Layer l:p2.getLayers()) {
+//            System.out.println(l.getSumaBledu());
+//        }
     }
 
 
