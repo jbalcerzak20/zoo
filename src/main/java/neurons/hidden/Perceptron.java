@@ -3,6 +3,7 @@ package neurons.hidden;
 import animals.Zwierze;
 import javafx.collections.ObservableList;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,16 +12,24 @@ public class Perceptron {
 
     private List<Layer> layers;
     private List<Double> summaryErrors;
+    private List<Double> summaryErrorsVerify;
     private ObservableList<Zwierze> zwierzes;
-    private List<Box> boxs;
+    private List<Box> daneUczace;
+    private List<Box> daneTestowe;
+    private List<Box> daneWeryfikacyjne;
     private int iloscDanychUczacych;
+    private int iloscDanychTestowych;
+    private int iloscDanychWeryfikacyjnych;
     private int maxIteration;
     private double epsilon;
 
     public Perceptron() {
         layers = new ArrayList<>();
         summaryErrors = new ArrayList<>();
-        boxs = new ArrayList<>();
+        summaryErrorsVerify = new ArrayList<>();
+        daneUczace = new ArrayList<>();
+        daneTestowe = new ArrayList<>();
+        daneWeryfikacyjne = new ArrayList<>();
 
         Layer we = new Layer(0);
         Layer wy = new Layer(2);
@@ -30,6 +39,8 @@ public class Perceptron {
 
         layers.get(0).setLt(0.2);
         layers.get(1).setLt(0.2);
+        layers.get(0).setLtm(0.2);
+        layers.get(1).setLtm(0.2);
 
         layers.get(0).setNextLayer(wy);
         layers.get(1).setPrevLayer(we);
@@ -38,55 +49,6 @@ public class Perceptron {
 
     public double normalize(double d) {
         return ((d) / (8));
-    }
-
-    private void ustawWarstwy() {
-        Layer l1 = new Layer(0);
-        Layer l2 = new Layer(1);
-        Layer l3 = new Layer(2);
-
-        l1.getNeurons().add(new Neuron(0.05));
-        l1.getNeurons().add(new Neuron(0.1));
-
-        l2.getNeurons().add(new Neuron());
-        l2.getNeurons().add(new Neuron());
-
-        l3.getNeurons().add(new Neuron(0, 0.01));
-        l3.getNeurons().add(new Neuron(0, 0.99));
-
-        layers.add(l1);
-        layers.add(l2);
-        layers.add(l3);
-
-        for (int i = 0; i < layers.size() - 1; i++) {
-//            layers.get(i).randomWeights(layers.get(i+1).getNeurons().size());
-            layers.get(i).setLt(0.5);
-        }
-
-        double[][] w1 = new double[2][2];
-        w1[0][0] = 0.15;
-        w1[0][1] = 0.20;
-        w1[1][0] = 0.25;
-        w1[1][1] = 0.30;
-        layers.get(0).setWeights(w1);
-
-        double[][] w2 = new double[2][2];
-        w2[0][0] = 0.40;
-        w2[0][1] = 0.45;
-        w2[1][0] = 0.50;
-        w2[1][1] = 0.55;
-        layers.get(1).setWeights(w2);
-
-        layers.get(0).setBias(0.35);
-        layers.get(1).setBias(0.60);
-
-        layers.get(0).setNextLayer(l2);
-
-        layers.get(1).setPrevLayer(l1);
-        layers.get(1).setNextLayer(l3);
-
-        layers.get(2).setPrevLayer(l2);
-
     }
 
     public void setLayers(double[] input, double[] target) {
@@ -150,76 +112,146 @@ public class Perceptron {
         }
     }
 
-    public void teach() {
-
-        initBoxs();
-
+    public void podzielDane(int uczace, int testowe, int weryfikacyjne) {
         double[] wejscie = new double[16];
         double[] target = new double[7];
 
-        int t = 0;
 
-        while (t < maxIteration) {
+        if ((uczace + testowe + weryfikacyjne) > zwierzes.size()) {
+            new Exception("Suma wszystkich wartosci nie moze byc wieksza niz calkowity zbiór danych");
+            return;
+        }
 
-            double suma = 0;
-            for (int x = 0; x < iloscDanychUczacych; x++) {
+
+        setIloscDanychUczacych(uczace);
+        setIloscDanychTestowych(testowe);
+        setIloscDanychWeryfikacyjnych(weryfikacyjne);
+
+        for (int i = 0; i < (iloscDanychUczacych + iloscDanychTestowych + iloscDanychWeryfikacyjnych); i++) {
+
+            if (i < iloscDanychUczacych) {
+                Box b = new Box();
 
                 setArray(target, 0);
+                setInputVector(i, wejscie, target);
+                b.setOczekiwane(target.clone());
+                b.setWe(wejscie.clone());
+                daneUczace.add(b);
+            }
 
-                setInputVector(x, wejscie, target);
-                setLayers(wejscie, target);
+            if ((i >= iloscDanychUczacych) && (i < (iloscDanychUczacych + iloscDanychTestowych))) {
+                Box b = new Box();
+
+                setArray(target, 0);
+                setInputVector(i, wejscie, target);
+                b.setOczekiwane(target.clone());
+                b.setWe(wejscie.clone());
+                daneTestowe.add(b);
+            }
+
+            if (i >= (iloscDanychUczacych + iloscDanychTestowych)) {
+                Box b = new Box();
+
+                setArray(target, 0);
+                setInputVector(i, wejscie, target);
+                b.setOczekiwane(target.clone());
+                b.setWe(wejscie.clone());
+                daneWeryfikacyjne.add(b);
+            }
+        }
+    }
+
+    public void teach() {
+        int t = 0;
+        while (t < maxIteration) {
+            double suma = 0;
+            for (int x = 0; x < iloscDanychUczacych; x++) {
+                setLayers(daneUczace.get(x).getWe(), daneUczace.get(x).getOczekiwane());
 
                 for (int i = 0; i < layers.size(); i++) {
                     layers.get(i).setNextNeuronInner();
                     layers.get(i).setErrors();
                 }
                 suma += layers.get(1).getLayerError();
-                boxs.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
+                daneUczace.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
 
                 for (int i = 0; i < layers.size(); i++) {
                     layers.get(i).updateWeights();
                 }
-
             }
             summaryErrors.add(suma / 2);
 
+            if (verificateStop())
+                break;
+
             if (epsilonStop())
                 break;
-//            System.out.println(summaryErrors.get(summaryErrors.size()-1));
+            System.out.println(summaryErrors.get(summaryErrors.size() - 1));
 
             t++;
         }
+        System.out.println(t);
     }
 
-    private Boolean epsilonStop() {
+    public void tests() {
 
 
-        if (summaryErrors.size() > 1) {
-            double p1 = summaryErrors.get(summaryErrors.size() - 1) / 1000;
-            double p2 = summaryErrors.get(summaryErrors.size() - 2) / 1000;
+        double suma = 0;
+        for (int x = 0; x < iloscDanychTestowych; x++) {
 
-            if (Math.abs(p1 - p2) <= epsilon)
-                return true;
+            setLayers(daneTestowe.get(x).getWe(), daneTestowe.get(x).getWy());
+
+            for (int i = 0; i < layers.size(); i++) {
+                layers.get(i).setNextNeuronInner();
+                layers.get(i).setErrors();
+            }
+            suma += layers.get(1).getLayerError();
+            daneTestowe.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
         }
 
+//        daneTestowe.forEach(item->{
+//            System.out.println("ocz= "+Arrays.toString(item.getOczekiwane()));
+//            System.out.println(Arrays.toString(item.getWy()));
+//            System.out.println("");
+//
+//        });
+    }
+
+    public Boolean verificateStop() {
+        double suma = 0;
+        for (int x = 0; x < iloscDanychWeryfikacyjnych; x++) {
+
+            setLayers(daneWeryfikacyjne.get(x).getWe(), daneWeryfikacyjne.get(x).getWy());
+
+            for (int i = 0; i < layers.size(); i++) {
+                layers.get(i).setNextNeuronInner();
+                layers.get(i).setErrors();
+            }
+            suma += layers.get(1).getLayerError();
+            daneWeryfikacyjne.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
+        }
+        summaryErrorsVerify.add(suma);
+
+        if (summaryErrorsVerify.size() > 1) {
+            double t1 = summaryErrorsVerify.get(summaryErrorsVerify.size() - 1);
+            double t2 = summaryErrorsVerify.get(summaryErrorsVerify.size() - 2);
+
+            if (t1 > t2)
+                return true;
+        }
+//        System.out.println(suma);
         return false;
     }
 
+    private Boolean epsilonStop() {
+        if (summaryErrors.size() > 1) {
+            double p1 = summaryErrors.get(summaryErrors.size() - 1);
+            double p2 = summaryErrors.get(summaryErrors.size() - 2);
 
-    private void initBoxs() {
-        double[] wejscie = new double[16];
-        double[] target = new double[7];
-
-
-        for (int i = 0; i < iloscDanychUczacych; i++) {
-            Box b = new Box();
-
-            setArray(target, 0);
-            setInputVector(i, wejscie, target);
-            b.setOczekiwane(target.clone());
-            b.setWe(wejscie.clone());
-            boxs.add(b);
+            if (Math.abs(p1 - p2) < epsilon)
+                return true;
         }
+        return false;
     }
 
     public List<Layer> getLayers() {
@@ -260,5 +292,21 @@ public class Perceptron {
 
     public void setEpsilon(double epsilon) {
         this.epsilon = epsilon;
+    }
+
+    public int getIloscDanychTestowych() {
+        return iloscDanychTestowych;
+    }
+
+    public void setIloscDanychTestowych(int iloscDanychTestowych) {
+        this.iloscDanychTestowych = iloscDanychTestowych;
+    }
+
+    public int getIloscDanychWeryfikacyjnych() {
+        return iloscDanychWeryfikacyjnych;
+    }
+
+    public void setIloscDanychWeryfikacyjnych(int iloscDanychWeryfikacyjnych) {
+        this.iloscDanychWeryfikacyjnych = iloscDanychWeryfikacyjnych;
     }
 }

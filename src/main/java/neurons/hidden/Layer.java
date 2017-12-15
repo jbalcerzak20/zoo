@@ -14,9 +14,11 @@ public class Layer {
     private Random random;
     private List<Neuron> neurons;
     private double[][] weights;
+    private double[][] weightsOld;
     private int typ = 1; //0 - input, 1 - hidden, 2 - output
     private int sizeNextLayer;
     private double lt;
+    private double ltm;
     private double layerError;
     private double bias;
     private Layer nextLayer;
@@ -26,6 +28,7 @@ public class Layer {
         neurons = new ArrayList<>();
         random = new Random();
         weights = new double[1][1];
+        weightsOld = new double[1][1];
     }
 
     public Layer(int typ) {
@@ -44,6 +47,7 @@ public class Layer {
     public void randomWeights(int sizeNextLayer) {
         this.sizeNextLayer = sizeNextLayer;
         weights = new double[neurons.size()][sizeNextLayer];
+        weightsOld = new double[neurons.size()][sizeNextLayer];
 
         double min = -1;
         double max = 1;
@@ -113,7 +117,6 @@ public class Layer {
                 neurons.get(i).setNewError();
                 layerError+=Math.pow(neurons.get(i).getWy()-neurons.get(i).getOczekiwana(),2);
             }
-//            System.out.println(layerError);
 //            error = error/2;
         }
     }
@@ -154,18 +157,26 @@ public class Layer {
 
         if(nextLayer!=null)
         {
+            //pierwsza czesc
             RealMatrix m1 = MatrixUtils.createRealMatrix(nextLayer.neurons.size(),1);
             m1.setColumnVector(0,MatrixUtils.createRealVector(nextLayer.getErrors()));
             RealMatrix m2 = MatrixUtils.createRealMatrix(1,neurons.size());
             m2.setRowVector(0,MatrixUtils.createRealVector(getInputs()));
-
             m1 = m1.scalarMultiply(lt);
-
             RealMatrix wnew =  m1.multiply(m2).transpose();
 
             RealMatrix wold = MatrixUtils.createRealMatrix(weights);
 
-            weights = wold.add(wnew).getData();
+            //momentum
+            RealMatrix mwc = MatrixUtils.createRealMatrix(weightsOld);
+            weightsOld = weights.clone();
+            RealMatrix momentum = wold.subtract(mwc);
+            momentum = momentum.scalarMultiply(ltm);
+
+            RealMatrix mtmp = wold.add(wnew);
+            mtmp.add(momentum);
+
+            weights = mtmp.getData();
         }
 
     }
@@ -213,5 +224,21 @@ public class Layer {
 
     public void setPrevLayer(Layer prevLayer) {
         this.prevLayer = prevLayer;
+    }
+
+    public double[][] getWeightsOld() {
+        return weightsOld;
+    }
+
+    public void setWeightsOld(double[][] weightsOld) {
+        this.weightsOld = weightsOld;
+    }
+
+    public double getLtm() {
+        return ltm;
+    }
+
+    public void setLtm(double ltm) {
+        this.ltm = ltm;
     }
 }

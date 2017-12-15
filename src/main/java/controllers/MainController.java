@@ -9,16 +9,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import loaders.ZooLoader;
-import neurons.Perceptron;
-import neurons.hidden.Layer;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
+import neurons.hidden.Perceptron;
 
 public class MainController {
     private Stage stage;
     private ZooLoader zooLoader;
-    private Perceptron perceptron;
     private ObservableList<Zwierze> zwierzes;
     private TableColumn<String,String > kolumnaNazwa;
     private TableColumn<String,String> kolumnaSiersc;
@@ -55,7 +50,6 @@ public class MainController {
     public void initialize()
     {
         zooLoader = new ZooLoader();
-        perceptron = new Perceptron(3);
         iniciowanieKolumn();
         ustawDaneUczace();
     }
@@ -125,25 +119,13 @@ public class MainController {
 
     private void perceptronTest()
     {
-        perceptron.setLt(0.2);
-        perceptron.setLtm(0.1);
-        perceptron.setMaxT(1000);
-        perceptron.setEps(0.00001);
-        perceptron.setZwierzes(zwierzes); //wejscia i wagi - init dwu wymiar. tablice
-//        perceptron.teach();
-
-
-        neurons.hidden.Perceptron p2 = new neurons.hidden.Perceptron();
+        Perceptron p2 = new Perceptron();
         p2.setZwierzes(zwierzes);
-        p2.setIloscDanychUczacych(70);
-        p2.setMaxIteration(100);
-        p2.setEpsilon(0.0001);
+        p2.podzielDane(70,20,11);
+        p2.setMaxIteration(1000);
+        p2.setEpsilon(0.00001);
         p2.teach();
-
-
-//        for (Layer l:p2.getLayers()) {
-//            System.out.println(l.getSumaBledu());
-//        }
+        p2.tests();
     }
 
 

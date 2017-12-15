@@ -10,6 +10,7 @@ public class Box {
     private double[] oczekiwane;
 
 
+
     public Box()
     {
         we = new double[1];
@@ -40,4 +41,6 @@ public class Box {
     public void setOczekiwane(double[] oczekiwane) {
         this.oczekiwane = oczekiwane;
     }
+
+
 }

@@ -47,36 +47,8 @@ public class Neuron {
         this.wy = wy;
     }
 
-    public void obliczError(Layer layer, double[][] weights, int n) {
-//        error = (Math.pow((oczekiwana - wy),2))/2;
-        if (layer == null) {
-            error = wy * (1 - wy) * (oczekiwana - wy);
-        } else {
-            if (layer.getTyp() == 2) {
-                double suma = 0;
-                double[] err = layer.getErrors();
-
-                for (int i = 0; i < weights[n].length; i++) {
-                    suma += (weights[n][i] * err[i]);
-                }
-                error = wy * (1 - wy) * suma;
-            }
-            if(layer.getTyp()==1)
-            {
-                double suma = 0;
-                double[] err = layer.getErrors();
-
-                for (int i = 0; i < weights[n].length; i++) {
-                    suma+=(weights[n][i]*err[i]);
-                }
-                error = wy*(1-wy)*suma;
-            }
-        }
-    }
-
     public void setNewError()
     {
-//        error = (Math.pow((wy-oczekiwana),2)/2);
         error = oczekiwana - wy;
     }
 
