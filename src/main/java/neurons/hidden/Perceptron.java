@@ -22,6 +22,8 @@ public class Perceptron {
     private int iloscDanychWeryfikacyjnych;
     private int maxIteration;
     private double epsilon;
+    private double lt;
+    private double ltm;
 
     public Perceptron() {
         layers = new ArrayList<>();
@@ -30,21 +32,62 @@ public class Perceptron {
         daneUczace = new ArrayList<>();
         daneTestowe = new ArrayList<>();
         daneWeryfikacyjne = new ArrayList<>();
+    }
 
-        Layer we = new Layer(0);
-        Layer wy = new Layer(2);
+    public void setInitLayers(int n) {
+        if (n == 2) {
+            Layer we = new Layer(0);
+            Layer wy = new Layer(2);
 
-        layers.add(we);
-        layers.add(wy);
+            layers.add(we);
+            layers.add(wy);
 
-        layers.get(0).setLt(0.2);
-        layers.get(1).setLt(0.2);
-        layers.get(0).setLtm(0.2);
-        layers.get(1).setLtm(0.2);
+            layers.get(0).setNextLayer(wy);
+            layers.get(1).setPrevLayer(we);
+        }
+        if (n > 2) {
+            Layer we = new Layer(0);
+            layers.add(we);
 
-        layers.get(0).setNextLayer(wy);
-        layers.get(1).setPrevLayer(we);
+            for (int i = 0; i < n - 2; i++) {
+                layers.add(new Layer(1));
+            }
 
+            Layer wy = new Layer(2);
+            layers.add(wy);
+
+            Layer next = null;
+            Layer prev = null;
+
+            for (int i = 0; i < layers.size(); i++) {
+
+                if (i < layers.size() - 1)
+                    next = layers.get(i + 1);
+
+                if (i > 0)
+                    prev = layers.get(i - 1);
+
+                layers.get(i).setNextLayer(next);
+                layers.get(i).setPrevLayer(prev);
+                next = null;
+                prev = null;
+            }
+
+        }
+    }
+
+    public void setInitNeurons(int[] neuronCouns) {
+        for (int i = 0; i < neuronCouns.length; i++) {
+            Layer l = layers.get(i);
+            int n = neuronCouns[i];
+            for (int j = 0; j < n; j++) {
+                l.getNeurons().add(new Neuron());
+            }
+        }
+
+        for (int i = 0; i < layers.size() - 1; i++) {
+            layers.get(i).randomWeights(layers.get(i + 1).getNeurons().size());
+        }
     }
 
     public double normalize(double d) {
@@ -53,26 +96,17 @@ public class Perceptron {
 
     public void setLayers(double[] input, double[] target) {
 
+        Layer first = layers.get(0);
+        Layer last = layers.get(layers.size() - 1);
 
-        if (layers.get(0).getNeurons().isEmpty()) {
-            for (int i = 0; i < input.length; i++) {
-                layers.get(0).getNeurons().add(new Neuron(input[i]));
-            }
-
-            for (int i = 0; i < target.length; i++) {
-                layers.get(1).getNeurons().add(new Neuron(0, target[i]));
-            }
-
-            layers.get(0).randomWeights(7);
-        } else {
-            for (int i = 0; i < input.length; i++) {
-                layers.get(0).getNeurons().get(i).setWe(input[i]);
-            }
-
-            for (int i = 0; i < target.length; i++) {
-                layers.get(1).getNeurons().get(i).setOczekiwana(target[i]);
-            }
+        for (int i = 0; i < input.length; i++) {
+            first.getNeurons().get(i).setWe(input[i]);
         }
+
+        for (int i = 0; i < target.length; i++) {
+            last.getNeurons().get(i).setOczekiwana(target[i]);
+        }
+
     }
 
     public void setInputVector(int i, double[] inputs, double[] target) {
@@ -161,7 +195,18 @@ public class Perceptron {
         }
     }
 
+    private void initWsp() {
+        layers.forEach(item -> {
+            item.setLtm(ltm);
+            item.setLt(lt);
+        });
+    }
+
     public void teach() {
+
+        initWsp();
+        int layerCount = layers.size();
+
         int t = 0;
         while (t < maxIteration) {
             double suma = 0;
@@ -170,10 +215,13 @@ public class Perceptron {
 
                 for (int i = 0; i < layers.size(); i++) {
                     layers.get(i).setNextNeuronInner();
-                    layers.get(i).setErrors();
                 }
-                suma += layers.get(1).getLayerError();
-                daneUczace.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
+
+                for (int i = layers.size() - 1; i >= 0; i--) {
+                    layers.get(i).setErrors();
+                    suma += layers.get(i).getLayerError();
+                }
+                daneUczace.get(x).setWy(layers.get(layerCount - 1).getOutputs(layers.get(layerCount - 1)));
 
                 for (int i = 0; i < layers.size(); i++) {
                     layers.get(i).updateWeights();
@@ -181,15 +229,15 @@ public class Perceptron {
             }
             summaryErrors.add(suma / 2);
 
-            if (verificateStop())
-                break;
-
-            if (epsilonStop())
-                break;
+//            if (verificateStop())
+//                break;
+//
+//            if (epsilonStop())
+//                break;
             System.out.println(summaryErrors.get(summaryErrors.size() - 1));
-
             t++;
         }
+
         System.out.println(t);
     }
 
@@ -203,18 +251,20 @@ public class Perceptron {
 
             for (int i = 0; i < layers.size(); i++) {
                 layers.get(i).setNextNeuronInner();
-                layers.get(i).setErrors();
             }
-            suma += layers.get(1).getLayerError();
-            daneTestowe.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
+            for (int i = layers.size() - 1; i >= 0; i--) {
+                layers.get(i).setErrors();
+                suma += layers.get(i).getLayerError();
+            }
+            daneTestowe.get(x).setWy(layers.get(layers.size() - 1).getOutputs(layers.get(layers.size() - 1)));
         }
 
-//        daneTestowe.forEach(item->{
-//            System.out.println("ocz= "+Arrays.toString(item.getOczekiwane()));
-//            System.out.println(Arrays.toString(item.getWy()));
-//            System.out.println("");
-//
-//        });
+        daneTestowe.forEach(item->{
+            System.out.println("ocz= "+Arrays.toString(item.getOczekiwane()));
+            System.out.println(Arrays.toString(item.getWy()));
+            System.out.println("");
+
+        });
     }
 
     public Boolean verificateStop() {
@@ -308,5 +358,21 @@ public class Perceptron {
 
     public void setIloscDanychWeryfikacyjnych(int iloscDanychWeryfikacyjnych) {
         this.iloscDanychWeryfikacyjnych = iloscDanychWeryfikacyjnych;
+    }
+
+    public double getLt() {
+        return lt;
+    }
+
+    public void setLt(double lt) {
+        this.lt = lt;
+    }
+
+    public double getLtm() {
+        return ltm;
+    }
+
+    public void setLtm(double ltm) {
+        this.ltm = ltm;
     }
 }

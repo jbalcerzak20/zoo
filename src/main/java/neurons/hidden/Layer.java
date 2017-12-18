@@ -74,6 +74,7 @@ public class Layer {
     }
 
     public void setNextNeuronInner() {
+
         if(nextLayer!=null)
         {
             RealMatrix m1 = MatrixUtils.createRealMatrix(1,neurons.size());

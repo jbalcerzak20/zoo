@@ -121,11 +121,22 @@ public class MainController {
     {
         Perceptron p2 = new Perceptron();
         p2.setZwierzes(zwierzes);
+        p2.setInitLayers(3);
+
+        int[]neurons = new int[3];
+        neurons[0]=16;
+        neurons[1]=10;
+//        neurons[1]=7;
+        neurons[2]=7;
+        p2.setInitNeurons(neurons);
+
         p2.podzielDane(70,20,11);
-        p2.setMaxIteration(1000);
+        p2.setMaxIteration(10);
         p2.setEpsilon(0.00001);
+        p2.setLt(0.2);
+        p2.setLtm(0.2);
         p2.teach();
-        p2.tests();
+//        p2.tests();
     }
 
 
