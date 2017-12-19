@@ -220,6 +220,7 @@ public class Perceptron {
                 for (int i = layers.size() - 1; i >= 0; i--) {
                     layers.get(i).setErrors();
                     suma += layers.get(i).getLayerError();
+//                    layers.get(i).updateWeights();
                 }
                 daneUczace.get(x).setWy(layers.get(layerCount - 1).getOutputs(layers.get(layerCount - 1)));
 
@@ -229,11 +230,15 @@ public class Perceptron {
             }
             summaryErrors.add(suma / 2);
 
-//            if (verificateStop())
-//                break;
-//
-//            if (epsilonStop())
-//                break;
+            if (verificateStop()) {
+                System.out.println("Verify stop");
+                break;
+            }
+
+            if (epsilonStop()) {
+                System.out.println("Epsilon stop");
+                break;
+            }
             System.out.println(summaryErrors.get(summaryErrors.size() - 1));
             t++;
         }
@@ -259,12 +264,18 @@ public class Perceptron {
             daneTestowe.get(x).setWy(layers.get(layers.size() - 1).getOutputs(layers.get(layers.size() - 1)));
         }
 
-        daneTestowe.forEach(item->{
-            System.out.println("ocz= "+Arrays.toString(item.getOczekiwane()));
-            System.out.println(Arrays.toString(item.getWy()));
-            System.out.println("");
+        int poprawne = 0;
+        for (Box item : daneTestowe) {
+            //            System.out.println("ocz= "+Arrays.toString(item.getOczekiwane()));
+//            System.out.println(Arrays.toString(item.getWy()));
+//            System.out.println(item.isRight());
+//            System.out.println("");
+            if (item.isRight()) {
+                poprawne += 1;
+            }
+        }
 
-        });
+        System.out.println("Ilosc poprawnie sklasyfikowanych danych testowych: "+poprawne+"/"+daneTestowe.size());
     }
 
     public Boolean verificateStop() {
@@ -275,11 +286,14 @@ public class Perceptron {
 
             for (int i = 0; i < layers.size(); i++) {
                 layers.get(i).setNextNeuronInner();
-                layers.get(i).setErrors();
             }
-            suma += layers.get(1).getLayerError();
-            daneWeryfikacyjne.get(x).setWy(layers.get(1).getOutputs(layers.get(1)));
+            for (int i = layers.size() - 1; i >= 0; i--) {
+                layers.get(i).setErrors();
+                suma += layers.get(i).getLayerError();
+            }
+            daneWeryfikacyjne.get(x).setWy(layers.get(layers.size() - 1).getOutputs(layers.get(layers.size() - 1)));
         }
+
         summaryErrorsVerify.add(suma);
 
         if (summaryErrorsVerify.size() > 1) {

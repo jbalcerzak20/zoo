@@ -52,6 +52,25 @@ public class Neuron {
         error = oczekiwana - wy;
     }
 
+    public void setNewError(Layer layer)
+    {
+        if(layer.getNextLayer()!=null) {
+            double suma = 0;
+            Layer next = layer.getNextLayer();
+            double w[][] = layer.getWeights();
+            int index = layer.getNeurons().indexOf(this);
+
+            for (int i = 0; i < next.getNeurons().size(); i++) {
+                suma+=w[index][i]*next.getNeurons().get(i).getError();
+            }
+
+            error = wy * (1 - wy) * suma;
+        }
+        else {
+            error = wy * (1 - wy) * (oczekiwana - wy);
+        }
+    }
+
     public double getOczekiwana() {
         return oczekiwana;
     }

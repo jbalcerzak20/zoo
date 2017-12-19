@@ -116,6 +116,9 @@ public class Layer {
             layerError = 0.0;
             for (int i = 0; i < neurons.size(); i++) {
                 neurons.get(i).setNewError();
+//                neurons.get(i).setNewError(this);
+
+
                 layerError+=Math.pow(neurons.get(i).getWy()-neurons.get(i).getOczekiwana(),2);
             }
 //            error = error/2;
