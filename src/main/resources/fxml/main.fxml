@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
    <children>
-      <VBox layoutX="1.0" prefHeight="400.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox layoutX="1.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label prefHeight="18.0" prefWidth="86.0" text="Zoo" textAlignment="CENTER" textOverrun="CLIP" VBox.vgrow="ALWAYS">
-               <font>
-                  <Font size="24.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="15.0" right="15.0" top="10.0" />
-               </VBox.margin>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-            </Label>
-            <TabPane fx:id="tabPane" prefWidth="577.0" tabClosingPolicy="UNAVAILABLE">
+            <HBox alignment="CENTER_LEFT" prefHeight="72.0" prefWidth="600.0" spacing="10.0">
+               <children>
+                  <Label prefHeight="18.0" prefWidth="86.0" text="Zoo" textAlignment="CENTER" textOverrun="CLIP">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+                  <TextField fx:id="iteracjeText" promptText="Maks. iteracji" text="1000" />
+                  <TextField fx:id="ltText" promptText="Wsp. uczenia" text="0.02" />
+                  <TextField fx:id="ltmText" promptText="Wsp. momentu" text="0.02" />
+                  <Button mnemonicParsing="false" onAction="#nauczAction" prefHeight="25.0" prefWidth="70.0" text="Naucz" />
+                  <Button mnemonicParsing="false" onAction="#testujAction" text="Testuj" />
+               </children>
+            </HBox>
+            <TabPane fx:id="tabPane" prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="tabDane" text="Dane ">
                   <content>
@@ -32,6 +39,33 @@
                         </AnchorPane>
                   </content>
                 </Tab>
+                  <Tab fx:id="wynikiTab" text="Wyniki">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="600.0">
+                           <children>
+                              <TextArea fx:id="wynikiText" layoutX="70.0" layoutY="10.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
+                  <Tab fx:id="wykresyTab" text="Wykresy">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <LineChart fx:id="uczenieWykres" layoutX="39.0" layoutY="44.0" title="Uczenie sieci" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="44.0">
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </LineChart>
+                           </children></AnchorPane>
+                    </content>
+                  </Tab>
               </tabs>
             </TabPane>
          </children>

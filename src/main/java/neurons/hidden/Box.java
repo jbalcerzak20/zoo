@@ -1,5 +1,6 @@
 package neurons.hidden;
 
+import animals.Rodzaj;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.summary.Sum;
@@ -13,6 +14,9 @@ public class Box {
     private double[] wy;
     private double[] oczekiwane;
     private Boolean poprawna;
+    private Rodzaj rodzajOczekiwany;
+    private Rodzaj rodzajWynikowy;
+    private int id;
 
 
 
@@ -21,6 +25,17 @@ public class Box {
         we = new double[1];
         wy = new double[1];
         oczekiwane = new double[1];
+    }
+
+    public Box(int i)
+    {
+        this();
+        this.id = i;
+    }
+
+    public int getId()
+    {
+        return id;
     }
 
     public double[] getWe() {
@@ -75,9 +90,20 @@ public class Box {
         }
         else
             poprawna = false;
+
+        rodzajOczekiwany = Rodzaj.getKlase(iocz+1);
+        rodzajWynikowy = Rodzaj.getKlase(iwy+1);
     }
 
     public Boolean isRight() {
         return poprawna;
+    }
+
+    public Rodzaj getRodzajOczekiwany() {
+        return rodzajOczekiwany;
+    }
+
+    public Rodzaj getRodzajWynikowy() {
+        return rodzajWynikowy;
     }
 }

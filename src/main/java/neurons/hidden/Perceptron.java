@@ -2,6 +2,10 @@ package neurons.hidden;
 
 import animals.Zwierze;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.shape.Rectangle;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -164,7 +168,7 @@ public class Perceptron {
         for (int i = 0; i < (iloscDanychUczacych + iloscDanychTestowych + iloscDanychWeryfikacyjnych); i++) {
 
             if (i < iloscDanychUczacych) {
-                Box b = new Box();
+                Box b = new Box(i);
 
                 setArray(target, 0);
                 setInputVector(i, wejscie, target);
@@ -174,7 +178,7 @@ public class Perceptron {
             }
 
             if ((i >= iloscDanychUczacych) && (i < (iloscDanychUczacych + iloscDanychTestowych))) {
-                Box b = new Box();
+                Box b = new Box(i);
 
                 setArray(target, 0);
                 setInputVector(i, wejscie, target);
@@ -184,7 +188,7 @@ public class Perceptron {
             }
 
             if (i >= (iloscDanychUczacych + iloscDanychTestowych)) {
-                Box b = new Box();
+                Box b = new Box(i);
 
                 setArray(target, 0);
                 setInputVector(i, wejscie, target);
@@ -203,10 +207,8 @@ public class Perceptron {
     }
 
     public void teach() {
-
         initWsp();
         int layerCount = layers.size();
-
         int t = 0;
         while (t < maxIteration) {
             double suma = 0;
@@ -220,7 +222,6 @@ public class Perceptron {
                 for (int i = layers.size() - 1; i >= 0; i--) {
                     layers.get(i).setErrors();
                     suma += layers.get(i).getLayerError();
-//                    layers.get(i).updateWeights();
                 }
                 daneUczace.get(x).setWy(layers.get(layerCount - 1).getOutputs(layers.get(layerCount - 1)));
 
@@ -232,14 +233,15 @@ public class Perceptron {
 
             if (verificateStop()) {
                 System.out.println("Verify stop");
-                break;
+//                break;
             }
 
             if (epsilonStop()) {
                 System.out.println("Epsilon stop");
                 break;
             }
-            System.out.println(summaryErrors.get(summaryErrors.size() - 1));
+//            System.out.println(summaryErrors.get(summaryErrors.size() - 1));
+//            System.out.println(t+" : "+summaryErrors.get(summaryErrors.size() - 1));
             t++;
         }
 
@@ -275,7 +277,53 @@ public class Perceptron {
             }
         }
 
-        System.out.println("Ilosc poprawnie sklasyfikowanych danych testowych: "+poprawne+"/"+daneTestowe.size());
+        System.out.println("Ilosc poprawnie sklasyfikowanych danych testowych: " + poprawne + "/" + daneTestowe.size());
+    }
+
+    public List<Double> getSummaryErrors() {
+        return summaryErrors;
+    }
+
+    public void setSummaryErrors(List<Double> summaryErrors) {
+        this.summaryErrors = summaryErrors;
+    }
+
+    public List<Double> getSummaryErrorsVerify() {
+        return summaryErrorsVerify;
+    }
+
+    public void setSummaryErrorsVerify(List<Double> summaryErrorsVerify) {
+        this.summaryErrorsVerify = summaryErrorsVerify;
+    }
+
+    public int getIloscUczacychPoprawnych() {
+        int poprawne = 0;
+        for (Box item : daneUczace) {
+            if (item.isRight()) {
+                poprawne += 1;
+            }
+        }
+        return poprawne;
+    }
+
+    public int getIloscTestowychPoprawnych() {
+        int poprawne = 0;
+        for (Box item : daneTestowe) {
+            if (item.isRight()) {
+                poprawne += 1;
+            }
+        }
+        return poprawne;
+    }
+
+    public int getIloscWeryfikacyjnychPoprawnych() {
+        int poprawne = 0;
+        for (Box item : daneWeryfikacyjne) {
+            if (item.isRight()) {
+                poprawne += 1;
+            }
+        }
+        return poprawne;
     }
 
     public Boolean verificateStop() {
@@ -388,5 +436,36 @@ public class Perceptron {
 
     public void setLtm(double ltm) {
         this.ltm = ltm;
+    }
+
+    public String getUczaceSummary() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Box box : daneUczace) {
+            String s = "";
+
+            if (!box.isRight()) {
+                s = Arrays.toString(box.getOczekiwane()) + " " + Arrays.toString(box.getWy());
+            }
+
+            builder.append(zwierzes.get(box.getId()).getNazwa() + " " + box.getRodzajOczekiwany().getNazwa() + " - " + box.getRodzajWynikowy().getNazwa() + " " + s + " " + "\n");
+        }
+
+        return builder.toString();
+    }
+
+    public String getTestoweSummary() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Box box : daneTestowe) {
+            String s = "";
+
+            if (!box.isRight()) {
+                s = Arrays.toString(box.getOczekiwane()) + " " + Arrays.toString(box.getWy());
+            }
+            builder.append(zwierzes.get(box.getId()).getNazwa() + " " + box.getRodzajOczekiwany().getNazwa() + " - " + box.getRodzajWynikowy().getNazwa() + " " + s + " " + "\n");
+        }
+
+        return builder.toString();
     }
 }

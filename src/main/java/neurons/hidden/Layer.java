@@ -125,7 +125,6 @@ public class Layer {
         }
     }
 
-
     public int getTyp() {
         return typ;
     }

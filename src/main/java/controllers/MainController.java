@@ -2,11 +2,14 @@ package controllers;
 
 import animals.Zwierze;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import loaders.ZooLoader;
 import neurons.hidden.Perceptron;
@@ -15,47 +18,103 @@ public class MainController {
     private Stage stage;
     private ZooLoader zooLoader;
     private ObservableList<Zwierze> zwierzes;
-    private TableColumn<String,String > kolumnaNazwa;
-    private TableColumn<String,String> kolumnaSiersc;
-    private TableColumn<String,String> kolumnaPiora;
-    private TableColumn<String,String> kolumnaJaja;
-    private TableColumn<String,String> kolumnaMleko;
-    private TableColumn<String,String> kolumnaLatajacy;
-    private TableColumn<String,String> kolumnaWodny;
-    private TableColumn<String,String> kolumnaDrapieznik;
-    private TableColumn<String,String> kolumnaUzebiony;
-    private TableColumn<String,String> kolumnaKregoslup;
-    private TableColumn<String,String> kolumnaOddycha;
-    private TableColumn<String,String> kolumnaJadowity;
-    private TableColumn<String,String> kolumnaPletwy;
-    private TableColumn<String,String> kolumnaNogi;
-    private TableColumn<String,String> kolumnaOgon;
-    private TableColumn<String,String> kolumnaDomowy;
-    private TableColumn<String,String> kolumnaRozmiarKota;
-    private TableColumn<String,String> kolumnaTyp;
-
+    private TableColumn<String, String> kolumnaNazwa;
+    private TableColumn<String, String> kolumnaSiersc;
+    private TableColumn<String, String> kolumnaPiora;
+    private TableColumn<String, String> kolumnaJaja;
+    private TableColumn<String, String> kolumnaMleko;
+    private TableColumn<String, String> kolumnaLatajacy;
+    private TableColumn<String, String> kolumnaWodny;
+    private TableColumn<String, String> kolumnaDrapieznik;
+    private TableColumn<String, String> kolumnaUzebiony;
+    private TableColumn<String, String> kolumnaKregoslup;
+    private TableColumn<String, String> kolumnaOddycha;
+    private TableColumn<String, String> kolumnaJadowity;
+    private TableColumn<String, String> kolumnaPletwy;
+    private TableColumn<String, String> kolumnaNogi;
+    private TableColumn<String, String> kolumnaOgon;
+    private TableColumn<String, String> kolumnaDomowy;
+    private TableColumn<String, String> kolumnaRozmiarKota;
+    private TableColumn<String, String> kolumnaTyp;
 
 
     @FXML
     private TabPane tabPane;
     @FXML
     private TableView daneUczace;
+    @FXML
+    private Tab wynikiTab;
+    @FXML
+    private TextArea wynikiText;
+    @FXML
+    private Tab wykresyTab;
+    @FXML
+    private TextField ltText;
+    @FXML
+    private TextField ltmText;
+    @FXML
+    private TextField iteracjeText;
+    @FXML
+    private LineChart<Number, Number> uczenieWykres;
+    private Perceptron perceptron;
+    private XYChart.Series series;
+    private XYChart.Series seriesV;
 
-    public MainController()
-    {
+
+    public MainController() {
 
     }
 
     @FXML
-    public void initialize()
-    {
+    public void initialize() {
+        uczenieWykres.getXAxis().setLabel("t");
+        uczenieWykres.getYAxis().setLabel("u(t)");
+        series = new XYChart.Series();
+        series.setName("U");
+        seriesV = new XYChart.Series();
+        seriesV.setName("V");
+        uczenieWykres.getData().add(series);
+        uczenieWykres.getData().add(seriesV);
         zooLoader = new ZooLoader();
+        perceptron = new Perceptron();
         iniciowanieKolumn();
         ustawDaneUczace();
+//        testujWszystko();
     }
 
-    private void iniciowanieKolumn()
-    {
+    private void testujWszystko() {
+        perceptron = new Perceptron();
+        perceptron.setZwierzes(zwierzes);
+        perceptron.setInitLayers(3);
+        uczenieWykres.getData().get(0).getData().clear();
+        uczenieWykres.getData().get(1).getData().clear();
+        wynikiText.clear();
+
+        int[] neurons = new int[3];
+        neurons[0] = 16;
+        neurons[1] = 20;
+//        neurons[1]=7;
+        neurons[2] = 7;
+        perceptron.setInitNeurons(neurons);
+
+        perceptron.podzielDane(70, 20, 11);
+        perceptron.setMaxIteration(100000);
+        perceptron.setEpsilon(0.00000001);
+        perceptron.setLt(0.0002);
+        perceptron.setLtm(0.001);
+        perceptron.teach();
+
+        System.out.println("Wyniki uczenia perceptronu: \n");
+        System.out.println(perceptron.getUczaceSummary());
+        System.out.println("Poprawne: " + String.valueOf(perceptron.getIloscUczacychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychUczacych()) + "\n");
+
+        perceptron.tests();
+        System.out.println("Wyniki testowania perceptronu: \n");
+        System.out.println(perceptron.getTestoweSummary());
+        System.out.println("Poprawne: " + String.valueOf(perceptron.getIloscTestowychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychTestowych()) + "\n");
+    }
+
+    private void iniciowanieKolumn() {
         kolumnaNazwa = new TableColumn<>("Nazwa");
         kolumnaSiersc = new TableColumn<>("Sierść");
         kolumnaPiora = new TableColumn<>("Pióra");
@@ -95,8 +154,8 @@ public class MainController {
         kolumnaTyp.setCellValueFactory(new PropertyValueFactory<>("typ"));
 
 
-        daneUczace.getColumns().addAll(kolumnaNazwa,kolumnaSiersc,kolumnaPiora,kolumnaJaja,kolumnaMleko,kolumnaLatajacy,kolumnaWodny,kolumnaDrapieznik,kolumnaUzebiony);
-        daneUczace.getColumns().addAll(kolumnaKregoslup,kolumnaOddycha,kolumnaJadowity,kolumnaPletwy,kolumnaNogi,kolumnaOgon,kolumnaDomowy,kolumnaRozmiarKota,kolumnaTyp);
+        daneUczace.getColumns().addAll(kolumnaNazwa, kolumnaSiersc, kolumnaPiora, kolumnaJaja, kolumnaMleko, kolumnaLatajacy, kolumnaWodny, kolumnaDrapieznik, kolumnaUzebiony);
+        daneUczace.getColumns().addAll(kolumnaKregoslup, kolumnaOddycha, kolumnaJadowity, kolumnaPletwy, kolumnaNogi, kolumnaOgon, kolumnaDomowy, kolumnaRozmiarKota, kolumnaTyp);
 
     }
 
@@ -108,36 +167,64 @@ public class MainController {
         this.stage = stage;
     }
 
-    private void ustawDaneUczace()
-    {
+    private void ustawDaneUczace() {
         zwierzes = zooLoader.wczytajPlik(getClass().getResource("/dane/zoo.data").getFile());
         daneUczace.getItems().addAll(zwierzes);
-
-        perceptronTest();
     }
 
+    @FXML
+    public void nauczAction(ActionEvent e) {
 
-    private void perceptronTest()
-    {
-        Perceptron p2 = new Perceptron();
-        p2.setZwierzes(zwierzes);
-        p2.setInitLayers(3);
+        int iloscWarstw = 3;
+        perceptron = new Perceptron();
+        perceptron.setZwierzes(zwierzes);
+        perceptron.setInitLayers(iloscWarstw);
+        uczenieWykres.getData().get(0).getData().clear();
+        uczenieWykres.getData().get(1).getData().clear();
+        wynikiText.clear();
 
-        int[]neurons = new int[3];
-        neurons[0]=16;
-        neurons[1]=30;
-//        neurons[1]=7;
-        neurons[2]=7;
-        p2.setInitNeurons(neurons);
+        int[] neurons = {16,10,7};
+        perceptron.setInitNeurons(neurons);
 
-        p2.podzielDane(70,20,11);
-        p2.setMaxIteration(1000000);
-        p2.setEpsilon(0.0000001);
-        p2.setLt(0.0002);
-        p2.setLtm(0.5);
-        p2.teach();
-        p2.tests();
+        perceptron.podzielDane(70, 20, 11);
+        perceptron.setMaxIteration(Integer.parseInt(iteracjeText.getText()));
+        perceptron.setEpsilon(0.00000001);
+        perceptron.setLt(Double.parseDouble(ltText.getText()));
+        perceptron.setLtm(Double.parseDouble(ltmText.getText()));
+        perceptron.teach();
+
+        wynikiText.appendText("Wyniki uczenia perceptronu: \n");
+        wynikiText.appendText(perceptron.getUczaceSummary());
+        wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscUczacychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychUczacych()) + "\n");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Zakończono uczenie");
+        alert.show();
+
+        for (int i = 0; i < perceptron.getSummaryErrors().size(); i+=10) {
+            XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrors().get(i));
+            Rectangle rect = new Rectangle(0, 0);
+            rect.setVisible(false);
+            data.setNode(rect);
+            uczenieWykres.getData().get(0).getData().add(data);
+        }
+
+        for (int i = 0; i < perceptron.getSummaryErrorsVerify().size(); i+=10) {
+            XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrorsVerify().get(i));
+            Rectangle rect = new Rectangle(0, 0);
+            rect.setVisible(false);
+            data.setNode(rect);
+            uczenieWykres.getData().get(1).getData().add(data);
+        }
     }
 
-
+    @FXML
+    public void testujAction(ActionEvent e) {
+        perceptron.tests();
+        wynikiText.appendText("Wyniki testowania perceptronu: \n");
+        wynikiText.appendText(perceptron.getTestoweSummary());
+        wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscTestowychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychTestowych()) + "\n");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Zakończono testowanie");
+        alert.show();
+    }
 }
