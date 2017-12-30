@@ -24,7 +24,7 @@ public class Zwierze {
     private Rodzaj rodzaj = null;
 
 
-    private Zwierze()
+    public Zwierze()
     {
 
     }

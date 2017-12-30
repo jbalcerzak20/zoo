@@ -16,7 +16,7 @@ public class Main extends Application {
         mainController.setStage(primaryStage);
 
         primaryStage.setTitle("Zoo");
-        primaryStage.setScene(new Scene(root,500,500));
+        primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
 

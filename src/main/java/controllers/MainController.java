@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -59,6 +58,10 @@ public class MainController {
     private Perceptron perceptron;
     private XYChart.Series series;
     private XYChart.Series seriesV;
+
+
+    @FXML
+    private TryingPerceptronController tryNeuralNetTabController;
 
 
     public MainController() {
@@ -198,6 +201,7 @@ public class MainController {
         wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscUczacychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychUczacych()) + "\n");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Zakończono uczenie");
+        alert.setHeaderText("Zakończono uczenie");
         alert.show();
 
         for (int i = 0; i < perceptron.getSummaryErrors().size(); i+=10) {
@@ -206,6 +210,7 @@ public class MainController {
             rect.setVisible(false);
             data.setNode(rect);
             uczenieWykres.getData().get(0).getData().add(data);
+
         }
 
         for (int i = 0; i < perceptron.getSummaryErrorsVerify().size(); i+=10) {
@@ -215,7 +220,11 @@ public class MainController {
             data.setNode(rect);
             uczenieWykres.getData().get(1).getData().add(data);
         }
+
+        passLearnedPerceptronToTryingNeuralNetTab();
     }
+
+
 
     @FXML
     public void testujAction(ActionEvent e) {
@@ -225,6 +234,12 @@ public class MainController {
         wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscTestowychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychTestowych()) + "\n");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Zakończono testowanie");
+        alert.setHeaderText("Zakończono testowanie");
         alert.show();
+    }
+
+    private void passLearnedPerceptronToTryingNeuralNetTab()
+    {
+        this.tryNeuralNetTabController.setPerceptron(this.perceptron);
     }
 }

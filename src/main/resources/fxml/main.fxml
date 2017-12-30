@@ -1,74 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-   <children>
-      <VBox layoutX="1.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="72.0" prefWidth="600.0" spacing="10.0">
-               <children>
+<VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+    <children>
+          <HBox alignment="CENTER_LEFT" spacing="10.0">
+              <children>
                   <Label prefHeight="18.0" prefWidth="86.0" text="Zoo" textAlignment="CENTER" textOverrun="CLIP">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
+                      <font>
+                          <Font size="24.0" />
+                      </font>
+                      <opaqueInsets>
+                          <Insets />
+                      </opaqueInsets>
                   </Label>
                   <TextField fx:id="iteracjeText" promptText="Maks. iteracji" text="1000" />
                   <TextField fx:id="ltText" promptText="Wsp. uczenia" text="0.02" />
                   <TextField fx:id="ltmText" promptText="Wsp. momentu" text="0.02" />
                   <Button mnemonicParsing="false" onAction="#nauczAction" prefHeight="25.0" prefWidth="70.0" text="Naucz" />
                   <Button mnemonicParsing="false" onAction="#testujAction" text="Testuj" />
-               </children>
-            </HBox>
-            <TabPane fx:id="tabPane" prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+              </children>
+              <padding>
+                  <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+              </padding>
+          </HBox>
+          <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
               <tabs>
-                <Tab fx:id="tabDane" text="Dane ">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="577.0">
-                           <children>
-                              <TableView fx:id="daneUczace" layoutX="7.0" layoutY="7.0" prefHeight="500.0" prefWidth="587.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </Tab>
+                  <Tab fx:id="tabDane" text="Dane ">
+               <content>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                                  <TableView fx:id="daneUczace" HBox.hgrow="ALWAYS">
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </content>
+                  </Tab>
                   <Tab fx:id="wynikiTab" text="Wyniki">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="600.0">
-                           <children>
-                              <TextArea fx:id="wynikiText" layoutX="70.0" layoutY="10.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                           <padding>
-                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                           </padding>
-                        </AnchorPane>
-                    </content>
+                      <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="600.0">
+                              <children>
+                                  <TextArea fx:id="wynikiText" layoutX="70.0" layoutY="10.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
+                              </children>
+                              <padding>
+                                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                              </padding>
+                          </AnchorPane>
+                      </content>
                   </Tab>
                   <Tab fx:id="wykresyTab" text="Wykresy">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <LineChart fx:id="uczenieWykres" layoutX="39.0" layoutY="44.0" title="Uczenie sieci" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="44.0">
-                                <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </LineChart>
-                           </children></AnchorPane>
-                    </content>
+                      <content>
+                          <VBox alignment="CENTER">
+                              <children>
+                                  <LineChart fx:id="uczenieWykres" title="Uczenie sieci" VBox.vgrow="ALWAYS">
+                                      <xAxis>
+                                          <CategoryAxis side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                      </yAxis>
+                                  </LineChart>
+                              </children>
+                          </VBox>
+                      </content>
+                  </Tab>
+                  <Tab text="Wybrubuj sieć">
+               <content>
+                  <VBox alignment="TOP_CENTER" fillWidth="false">
+                     <children>
+                        <ScrollPane VBox.vgrow="ALWAYS">
+                           <content>
+                              <HBox alignment="TOP_CENTER">
+                                 <children>
+                                    <fx:include fx:id="tryNeuralNetTab" source="tryNeuralNet.fxml" />
+                                 </children>
+                              </HBox>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
+               </content>
                   </Tab>
               </tabs>
-            </TabPane>
-         </children>
-      </VBox>
-   </children>
-</AnchorPane>
+          </TabPane>
+    </children>
+</VBox>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TryingPerceptronController">
+   <children>
+      <HBox>
+         <children>
+            <VBox spacing="10.0">
+               <children>
+                  <CheckBox fx:id="hairCheckBox" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy ma sierść" />
+                  <CheckBox fx:id="feathersCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy ma pióra" />
+                  <CheckBox fx:id="eggsCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy znosi jaja" />
+                  <CheckBox fx:id="milkCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy ma mleko" />
+                  <CheckBox fx:id="airborneCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy lata" />
+                  <CheckBox fx:id="aquaticCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy jest wodny" />
+                  <CheckBox fx:id="predatorCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy to drapieżnik" />
+                  <CheckBox fx:id="toothedCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy posiada uzębienie" />
+                  <CheckBox fx:id="backboneCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy ma kręgosłup" />
+                  <CheckBox fx:id="breathesCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy potrafi oddychać" />
+                  <CheckBox fx:id="venomousCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy jest jadowity" />
+                  <CheckBox fx:id="finsCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy posiada płetwy" />
+                  <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0">
+                     <children>
+                        <Label text="Ilość nóg" />
+                        <ComboBox fx:id="numberOfLegsComboBox" prefWidth="150.0" />
+                     </children>
+                  </HBox>
+                  <CheckBox fx:id="tailCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy ma ogon" />
+                  <CheckBox fx:id="domesticCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Czy to zwierze domowe" />
+                  <CheckBox fx:id="catsizeCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Catsize" />
+                  <Button fx:id="guessButton" mnemonicParsing="false" onAction="#guessOnAction" text="Zgadnij" />
+               </children>
+            </VBox>
+            <Label fx:id="resultOfGuessingLabel" prefHeight="43.0" prefWidth="325.0" text="Czy to: MIECZAK?" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font name="Arial" size="38.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>
