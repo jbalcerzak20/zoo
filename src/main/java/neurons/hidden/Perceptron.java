@@ -2,12 +2,7 @@ package neurons.hidden;
 
 import animals.Zwierze;
 import javafx.collections.ObservableList;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.shape.Rectangle;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -98,8 +93,7 @@ public class Perceptron {
         return ((d) / (8));
     }
 
-    public void setLayers(double[] input, double[] target) {
-
+    public void putToLayers(double[] input, double[] target) {
         Layer first = layers.get(0);
         Layer last = layers.get(layers.size() - 1);
 
@@ -113,29 +107,34 @@ public class Perceptron {
 
     }
 
-    public void setInputVector(int i, double[] inputs, double[] target) {
 
-        Zwierze item = zwierzes.get(i);
-        inputs[0] = boolToDouble(item.isSiersc());
-        inputs[1] = boolToDouble(item.isPiora());
-        inputs[2] = boolToDouble(item.isJaja());
-        inputs[3] = boolToDouble(item.isMleko());
-        inputs[4] = boolToDouble(item.isLatajacy());
-        inputs[5] = boolToDouble(item.isWodny());
-        inputs[6] = boolToDouble(item.isDrapieznik());
-        inputs[7] = boolToDouble(item.isUzebiony());
-        inputs[8] = boolToDouble(item.isKregoslup());
-        inputs[9] = boolToDouble(item.isOddycha());
-        inputs[10] = boolToDouble(item.isJadowity());
-        inputs[11] = boolToDouble(item.isPletwy());
-        inputs[12] = boolToDouble(item.isOgon());
-        inputs[13] = boolToDouble(item.isDomowy());
-        inputs[14] = boolToDouble(item.isRozmiarKota());
-        inputs[15] = normalize(item.getNogi());
-
-        target[item.getTyp() - 1] = 1;
+    private void putCorrectTarget(double[] target, Zwierze zwierze)
+    {
+        target[zwierze.getTyp() - 1] = 1;
     }
 
+    private double[] constructInputVectorOf(Zwierze zwierze)
+    {
+        double[] input = new double[16];
+        input[0] = boolToDouble(zwierze.isSiersc());
+        input[1] = boolToDouble(zwierze.isPiora());
+        input[2] = boolToDouble(zwierze.isJaja());
+        input[3] = boolToDouble(zwierze.isMleko());
+        input[4] = boolToDouble(zwierze.isLatajacy());
+        input[5] = boolToDouble(zwierze.isWodny());
+        input[6] = boolToDouble(zwierze.isDrapieznik());
+        input[7] = boolToDouble(zwierze.isUzebiony());
+        input[8] = boolToDouble(zwierze.isKregoslup());
+        input[9] = boolToDouble(zwierze.isOddycha());
+        input[10] = boolToDouble(zwierze.isJadowity());
+        input[11] = boolToDouble(zwierze.isPletwy());
+        input[12] = boolToDouble(zwierze.isOgon());
+        input[13] = boolToDouble(zwierze.isDomowy());
+        input[14] = boolToDouble(zwierze.isRozmiarKota());
+        input[15] = normalize(zwierze.getNogi());
+
+        return input;
+    }
 
     private double boolToDouble(Boolean value) {
         if (value)
@@ -151,7 +150,7 @@ public class Perceptron {
     }
 
     public void podzielDane(int uczace, int testowe, int weryfikacyjne) {
-        double[] wejscie = new double[16];
+        double[] wejscie;
         double[] target = new double[7];
 
 
@@ -171,7 +170,9 @@ public class Perceptron {
                 Box b = new Box(i);
 
                 setArray(target, 0);
-                setInputVector(i, wejscie, target);
+                wejscie = constructInputVectorOf(zwierzes.get(i));
+                putCorrectTarget(target, zwierzes.get(i));
+//                wejscie = setInputVector(i, target);
                 b.setOczekiwane(target.clone());
                 b.setWe(wejscie.clone());
                 daneUczace.add(b);
@@ -181,7 +182,9 @@ public class Perceptron {
                 Box b = new Box(i);
 
                 setArray(target, 0);
-                setInputVector(i, wejscie, target);
+//                setInputVector(i, wejscie, target);
+                wejscie = constructInputVectorOf(zwierzes.get(i));
+                putCorrectTarget(target, zwierzes.get(i));
                 b.setOczekiwane(target.clone());
                 b.setWe(wejscie.clone());
                 daneTestowe.add(b);
@@ -191,7 +194,9 @@ public class Perceptron {
                 Box b = new Box(i);
 
                 setArray(target, 0);
-                setInputVector(i, wejscie, target);
+//                setInputVector(i, wejscie, target);
+                wejscie = constructInputVectorOf(zwierzes.get(i));
+                putCorrectTarget(target, zwierzes.get(i));
                 b.setOczekiwane(target.clone());
                 b.setWe(wejscie.clone());
                 daneWeryfikacyjne.add(b);
@@ -213,16 +218,12 @@ public class Perceptron {
         while (t < maxIteration) {
             double suma = 0;
             for (int x = 0; x < iloscDanychUczacych; x++) {
-                setLayers(daneUczace.get(x).getWe(), daneUczace.get(x).getOczekiwane());
+                putToLayers(daneUczace.get(x).getWe(), daneUczace.get(x).getOczekiwane());
 
-                for (int i = 0; i < layers.size(); i++) {
-                    layers.get(i).setNextNeuronInner();
-                }
+                passRecordThroughNet();
 
-                for (int i = layers.size() - 1; i >= 0; i--) {
-                    layers.get(i).setErrors();
-                    suma += layers.get(i).getLayerError();
-                }
+                suma = coutErrors(suma);
+
                 daneUczace.get(x).setWy(layers.get(layerCount - 1).getOutputs(layers.get(layerCount - 1)));
 
                 for (int i = 0; i < layers.size(); i++) {
@@ -232,12 +233,12 @@ public class Perceptron {
             summaryErrors.add(suma / 2);
 
             if (verificateStop()) {
-                System.out.println("Verify stop");
+//                System.out.println("Verify stop");
 //                break;
             }
 
             if (epsilonStop()) {
-                System.out.println("Epsilon stop");
+//                System.out.println("Epsilon stop");
                 break;
             }
 //            System.out.println(summaryErrors.get(summaryErrors.size() - 1));
@@ -245,25 +246,26 @@ public class Perceptron {
             t++;
         }
 
-        System.out.println(t);
+//        System.out.println(t);
+    }
+
+    public double[] guess(Zwierze animal)
+    {
+        double[] input = constructInputVectorOf(animal);
+        double[] fakeTargets = new double[7];
+        Arrays.fill(fakeTargets, 0);
+        putToLayers(input, fakeTargets);
+        passRecordThroughNet();
+        return getOutputs();
     }
 
     public void tests() {
-
-
         double suma = 0;
         for (int x = 0; x < iloscDanychTestowych; x++) {
-
-            setLayers(daneTestowe.get(x).getWe(), daneTestowe.get(x).getWy());
-
-            for (int i = 0; i < layers.size(); i++) {
-                layers.get(i).setNextNeuronInner();
-            }
-            for (int i = layers.size() - 1; i >= 0; i--) {
-                layers.get(i).setErrors();
-                suma += layers.get(i).getLayerError();
-            }
-            daneTestowe.get(x).setWy(layers.get(layers.size() - 1).getOutputs(layers.get(layers.size() - 1)));
+            putToLayers(daneTestowe.get(x).getWe(), daneTestowe.get(x).getWy());
+            passRecordThroughNet();
+            suma = coutErrors(suma);
+            daneTestowe.get(x).setWy(getOutputs());
         }
 
         int poprawne = 0;
@@ -277,7 +279,28 @@ public class Perceptron {
             }
         }
 
-        System.out.println("Ilosc poprawnie sklasyfikowanych danych testowych: " + poprawne + "/" + daneTestowe.size());
+//        System.out.println("Ilosc poprawnie snormklasyfikowanych danych testowych: " + poprawne + "/" + daneTestowe.size());
+    }
+
+    private double[] getOutputs()
+    {
+        return layers.get(layers.size() - 1).getOutputs(layers.get(layers.size() - 1));
+    }
+
+    private void passRecordThroughNet()
+    {
+        for (int i = 0; i < layers.size(); i++) {
+            layers.get(i).setNextNeuronInner();
+        }
+    }
+
+    private double coutErrors(double suma)
+    {
+        for (int i = layers.size() - 1; i >= 0; i--) {
+            layers.get(i).setErrors();
+            suma += layers.get(i).getLayerError();
+        }
+        return suma;
     }
 
     public List<Double> getSummaryErrors() {
@@ -330,7 +353,7 @@ public class Perceptron {
         double suma = 0;
         for (int x = 0; x < iloscDanychWeryfikacyjnych; x++) {
 
-            setLayers(daneWeryfikacyjne.get(x).getWe(), daneWeryfikacyjne.get(x).getWy());
+            putToLayers(daneWeryfikacyjne.get(x).getWe(), daneWeryfikacyjne.get(x).getWy());
 
             for (int i = 0; i < layers.size(); i++) {
                 layers.get(i).setNextNeuronInner();
