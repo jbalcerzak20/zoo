@@ -139,7 +139,6 @@ public class MainController
     }
 
 
-
     private void iniciowanieKolumn()
     {
         kolumnaNazwa = new TableColumn<>("Nazwa");
@@ -211,22 +210,25 @@ public class MainController
             protected Void call() throws Exception
             {
                 teach();
-                updateProgress(1,1);
+                updateProgress(1, 1);
                 chartNotRendered = true;
                 return null;
             }
         };
         progressIndicator.progressProperty().bind(task.progressProperty());
         progressIndicator.setVisible(true);
-       Thread teachThread = new Thread(task);
-       teachThread.start();
+        Thread teachThread = new Thread(task);
+        teachThread.start();
 
     }
 
     public void chartsTabOnSelectionChanged()
     {
-        if(chartNotRendered)
+        if (chartNotRendered)
         {
+            uczenieWykres.getData().get(0).getData().clear();
+            uczenieWykres.getData().get(1).getData().clear();
+
             for (int i = 0; i < perceptron.getSummaryErrors().size(); i += 10)
             {
                 XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrors().get(i));
@@ -256,8 +258,7 @@ public class MainController
         perceptron = new Perceptron();
         perceptron.setZwierzes(zwierzes);
         perceptron.setInitLayers(iloscWarstw);
-        uczenieWykres.getData().get(0).getData().clear();
-        uczenieWykres.getData().get(1).getData().clear();
+
         wynikiText.clear();
 
         int[] neurons = {16, 10, 7};
