@@ -9,13 +9,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import neurons.hidden.Perceptron;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 
 public class TryingPerceptronController
 {
+    @FXML
+    private VBox mainVBox;
+
     @FXML
     private CheckBox hairCheckBox;
 
@@ -76,16 +79,14 @@ public class TryingPerceptronController
 
     public void initialize()
     {
-        ObservableList<Integer> numberOfLegsObservableList = FXCollections.observableArrayList();
-        numberOfLegsObservableList.add(0);
-        numberOfLegsObservableList.add(2);
-        numberOfLegsObservableList.add(4);
-        numberOfLegsObservableList.add(5);
-        numberOfLegsObservableList.add(6);
-        numberOfLegsObservableList.add(8);
+        prepareNumberOfLegsComboBox();
+        resultOfGuessingLabel.setText("");
 
-        numberOfLegsComboBox.setItems(numberOfLegsObservableList);
-        numberOfLegsComboBox.setValue(0);
+    }
+
+    public VBox getMainVBox()
+    {
+        return mainVBox;
     }
 
     public void setPerceptron(Perceptron perceptron)
@@ -99,16 +100,21 @@ public class TryingPerceptronController
         getAnimalFromUser();
         double[] output = perceptron.guess(zwierze);
         String result = checkWhatPerceptronReply(output);
-//        this.resultOfGuessingLabel.setText("Czy to " + result.toUpperCase() + "?");
         putMessegeToUser(result);
     }
 
 
-
-    private void putMessegeToUser(String result)
+    private void prepareNumberOfLegsComboBox()
     {
-        String msg = MessageFormat.format("Czy to {0}?", result.toUpperCase());
-        this.resultOfGuessingLabel.setText(msg);
+        ObservableList<Integer> numberOfLegsObservableList = FXCollections.observableArrayList();
+        numberOfLegsObservableList.add(0);
+        numberOfLegsObservableList.add(2);
+        numberOfLegsObservableList.add(4);
+        numberOfLegsObservableList.add(5);
+        numberOfLegsObservableList.add(6);
+        numberOfLegsObservableList.add(8);
+        numberOfLegsComboBox.setItems(numberOfLegsObservableList);
+        numberOfLegsComboBox.setValue(0);
     }
 
     private void getAnimalFromUser()
@@ -146,5 +152,11 @@ public class TryingPerceptronController
 
         Rodzaj rodzaj = Rodzaj.getKlase((index + 1));
         return rodzaj.getNazwa();
+    }
+
+    private void putMessegeToUser(String result)
+    {
+        String msg = MessageFormat.format("Czy to {0}?", result.toUpperCase());
+        this.resultOfGuessingLabel.setText(msg);
     }
 }

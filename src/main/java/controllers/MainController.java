@@ -2,6 +2,7 @@ package controllers;
 
 import animals.Zwierze;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -13,7 +14,8 @@ import javafx.stage.Stage;
 import loaders.ZooLoader;
 import neurons.hidden.Perceptron;
 
-public class MainController {
+public class MainController
+{
     private Stage stage;
     private ZooLoader zooLoader;
     private ObservableList<Zwierze> zwierzes;
@@ -59,17 +61,25 @@ public class MainController {
     private XYChart.Series series;
     private XYChart.Series seriesV;
 
+    private boolean chartNotRendered = false;
 
     @FXML
-    private TryingPerceptronController tryNeuralNetTabController;
+    ProgressIndicator progressIndicator;
+
+    @FXML
+    private TryingPerceptronController tryingNeuralNetTabController;
 
 
-    public MainController() {
+    public MainController()
+    {
 
     }
 
     @FXML
-    public void initialize() {
+    public void initialize()
+    {
+//        makeInvisibleChartsTabResultTabAndTryingNeuralNetTab();
+
         uczenieWykres.getXAxis().setLabel("t");
         uczenieWykres.getYAxis().setLabel("u(t)");
         series = new XYChart.Series();
@@ -85,7 +95,15 @@ public class MainController {
 //        testujWszystko();
     }
 
-    private void testujWszystko() {
+    private void makeInvisibleChartsTabResultTabAndTryingNeuralNetTab()
+    {
+        wykresyTab.getContent().setVisible(false);
+        wynikiTab.getContent().setVisible(false);
+        tryingNeuralNetTabController.getMainVBox().setVisible(false);
+    }
+
+    private void testujWszystko()
+    {
         perceptron = new Perceptron();
         perceptron.setZwierzes(zwierzes);
         perceptron.setInitLayers(3);
@@ -105,7 +123,10 @@ public class MainController {
         perceptron.setEpsilon(0.00000001);
         perceptron.setLt(0.0002);
         perceptron.setLtm(0.001);
+
+
         perceptron.teach();
+
 
         System.out.println("Wyniki uczenia perceptronu: \n");
         System.out.println(perceptron.getUczaceSummary());
@@ -117,7 +138,10 @@ public class MainController {
         System.out.println("Poprawne: " + String.valueOf(perceptron.getIloscTestowychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychTestowych()) + "\n");
     }
 
-    private void iniciowanieKolumn() {
+
+
+    private void iniciowanieKolumn()
+    {
         kolumnaNazwa = new TableColumn<>("Nazwa");
         kolumnaSiersc = new TableColumn<>("Sierść");
         kolumnaPiora = new TableColumn<>("Pióra");
@@ -162,22 +186,72 @@ public class MainController {
 
     }
 
-    public Stage getStage() {
+    public Stage getStage()
+    {
         return stage;
     }
 
-    public void setStage(Stage stage) {
+    public void setStage(Stage stage)
+    {
         this.stage = stage;
     }
 
-    private void ustawDaneUczace() {
+    private void ustawDaneUczace()
+    {
         zwierzes = zooLoader.wczytajPlik(getClass().getResource("/dane/zoo.data").getFile());
         daneUczace.getItems().addAll(zwierzes);
     }
 
     @FXML
-    public void nauczAction(ActionEvent e) {
+    public void nauczAction(ActionEvent e) throws InterruptedException
+    {
+        Task task = new Task<Void>()
+        {
+            @Override
+            protected Void call() throws Exception
+            {
+                teach();
+                updateProgress(1,1);
+                chartNotRendered = true;
+                return null;
+            }
+        };
+        progressIndicator.progressProperty().bind(task.progressProperty());
+        progressIndicator.setVisible(true);
+       Thread teachThread = new Thread(task);
+       teachThread.start();
 
+    }
+
+    public void chartsTabOnSelectionChanged()
+    {
+        if(chartNotRendered)
+        {
+            for (int i = 0; i < perceptron.getSummaryErrors().size(); i += 10)
+            {
+                XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrors().get(i));
+                Rectangle rect = new Rectangle(0, 0);
+                rect.setVisible(false);
+                data.setNode(rect);
+                uczenieWykres.getData().get(0).getData().add(data);
+
+            }
+
+            for (int i = 0; i < perceptron.getSummaryErrorsVerify().size(); i += 10)
+            {
+                XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrorsVerify().get(i));
+                Rectangle rect = new Rectangle(0, 0);
+                rect.setVisible(false);
+                data.setNode(rect);
+                uczenieWykres.getData().get(1).getData().add(data);
+            }
+
+            chartNotRendered = false;
+        }
+    }
+
+    private void teach()
+    {
         int iloscWarstw = 3;
         perceptron = new Perceptron();
         perceptron.setZwierzes(zwierzes);
@@ -186,7 +260,7 @@ public class MainController {
         uczenieWykres.getData().get(1).getData().clear();
         wynikiText.clear();
 
-        int[] neurons = {16,10,7};
+        int[] neurons = {16, 10, 7};
         perceptron.setInitNeurons(neurons);
 
         perceptron.podzielDane(70, 20, 11);
@@ -194,40 +268,21 @@ public class MainController {
         perceptron.setEpsilon(0.00000001);
         perceptron.setLt(Double.parseDouble(ltText.getText()));
         perceptron.setLtm(Double.parseDouble(ltmText.getText()));
+
         perceptron.teach();
 
         wynikiText.appendText("Wyniki uczenia perceptronu: \n");
         wynikiText.appendText(perceptron.getUczaceSummary());
         wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscUczacychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychUczacych()) + "\n");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Zakończono uczenie");
-        alert.setHeaderText("Zakończono uczenie");
-        alert.show();
 
-        for (int i = 0; i < perceptron.getSummaryErrors().size(); i+=10) {
-            XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrors().get(i));
-            Rectangle rect = new Rectangle(0, 0);
-            rect.setVisible(false);
-            data.setNode(rect);
-            uczenieWykres.getData().get(0).getData().add(data);
-
-        }
-
-        for (int i = 0; i < perceptron.getSummaryErrorsVerify().size(); i+=10) {
-            XYChart.Data data = new XYChart.Data(String.valueOf(i), perceptron.getSummaryErrorsVerify().get(i));
-            Rectangle rect = new Rectangle(0, 0);
-            rect.setVisible(false);
-            data.setNode(rect);
-            uczenieWykres.getData().get(1).getData().add(data);
-        }
 
         passLearnedPerceptronToTryingNeuralNetTab();
     }
 
 
-
     @FXML
-    public void testujAction(ActionEvent e) {
+    public void testujAction(ActionEvent e)
+    {
         perceptron.tests();
         wynikiText.appendText("Wyniki testowania perceptronu: \n");
         wynikiText.appendText(perceptron.getTestoweSummary());
@@ -240,6 +295,8 @@ public class MainController {
 
     private void passLearnedPerceptronToTryingNeuralNetTab()
     {
-        this.tryNeuralNetTabController.setPerceptron(this.perceptron);
+        this.tryingNeuralNetTabController.setPerceptron(this.perceptron);
     }
+
+
 }
