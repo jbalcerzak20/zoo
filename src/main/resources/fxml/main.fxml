@@ -35,6 +35,7 @@
                   <TextField fx:id="ltmText" promptText="Wsp. momentu" text="0.02" />
                   <Button mnemonicParsing="false" onAction="#nauczAction" prefHeight="25.0" prefWidth="70.0" text="Naucz" />
                   <Button mnemonicParsing="false" onAction="#testujAction" text="Testuj" />
+            <Button mnemonicParsing="false" onAction="#openNetSettings" text="Ustawienia sieci" />
             <ProgressIndicator fx:id="progressIndicator" visible="false" />
               </children>
               <padding>
