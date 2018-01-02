@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Perceptron {
@@ -403,6 +404,9 @@ public class Perceptron {
 
     public void setZwierzes(ObservableList<Zwierze> zwierzes) {
         this.zwierzes = zwierzes;
+        Collections.shuffle(zwierzes);
+        Collections.shuffle(zwierzes);
+        Collections.shuffle(zwierzes);
     }
 
     public int getIloscDanychUczacych() {
