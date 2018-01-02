@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="15.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label text="Ustawienia sieci">
+         <font>
+            <Font size="32.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER">
+         <children>
+            <Label text="Ilość warstw ukrytych" />
+            <Slider fx:id="numberOfLayerSlider" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" prefHeight="45.0" prefWidth="262.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+         </children>
+         <padding>
+            <Insets left="25.0" right="25.0" />
+         </padding>
+      </HBox>
+      <Separator />
+      <HBox alignment="CENTER" spacing="5.0">
+         <children>
+            <Label text="Ilośc neuronów w warstwie 1" />
+            <Slider fx:id="firstLayerSlider" blockIncrement="1.0" majorTickUnit="1.0" max="15.0" min="1.0" minorTickCount="0" prefHeight="45.0" prefWidth="312.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
+         </children>
+         <padding>
+            <Insets left="25.0" right="25.0" />
+         </padding>
+      </HBox>
+      <VBox fx:id="hiddenLayerSettingVBox" spacing="15.0" />
+   </children>
+   <padding>
+      <Insets bottom="25.0" top="25.0" />
+   </padding>
+</VBox>
