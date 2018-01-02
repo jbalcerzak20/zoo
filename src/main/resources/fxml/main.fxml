@@ -88,7 +88,7 @@
                           </VBox>
                       </content>
                   </Tab>
-                  <Tab text="Wybrubuj sieć">
+                  <Tab text="Wypróbuj sieć">
                <content>
                   <VBox alignment="TOP_CENTER" fillWidth="false">
                      <children>
