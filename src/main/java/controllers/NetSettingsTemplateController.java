@@ -132,7 +132,7 @@ public class NetSettingsTemplateController
 
     private void loadNeouronsNumberOfHiddenLayer()
     {
-        firstLayerSlider.setValue(actualNetSettings.getNeurons().get(0));
+        firstLayerSlider.setValue(actualNetSettings.getNeuronsNumberOfHiddenLayers().get(0));
 
         for(int layerIndex = 1; layerIndex < actualNetSettings.getNumberOfHiddenLayers(); layerIndex++)
         {
@@ -144,7 +144,7 @@ public class NetSettingsTemplateController
     {
         HBox hBox = (HBox) hiddenLayerSettingVBox.getChildren().get(layerIndex -1);
         Slider slider = (Slider) hBox.getChildren().get(1);
-        slider.setValue(actualNetSettings.getNeurons().get(layerIndex));
+        slider.setValue(actualNetSettings.getNeuronsNumberOfHiddenLayers().get(layerIndex));
     }
 
 

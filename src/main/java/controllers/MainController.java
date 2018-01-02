@@ -266,14 +266,14 @@ public class MainController
 
     private void teach()
     {
-        int iloscWarstw = netSettings.getNumberOfHiddenLayers() + 2;
+        int iloscWarstw = getNumberOfLayers();
         perceptron = new Perceptron();
         perceptron.setZwierzes(zwierzes);
         perceptron.setInitLayers(iloscWarstw);
 
         wynikiText.clear();
 
-        int[] neurons = getNeurons();
+        int[] neurons = getNumberOfNeuronsPerLayer();
         perceptron.setInitNeurons(neurons);
 
         perceptron.podzielDane(70, 20, 11);
@@ -292,18 +292,25 @@ public class MainController
         passLearnedPerceptronToTryingNeuralNetTab();
     }
 
-    private int[] getNeurons()
+    private int getNumberOfLayers()
     {
-        int[] neurons = new int[netSettings.getNumberOfHiddenLayers() + 2];
-        neurons[0] = 16;
-        neurons[neurons.length - 1] = 7;
-        int i = 1;
-        for (Integer v : netSettings.getNeurons())
+        return netSettings.getNumberOfHiddenLayers() + 2;
+    }
+
+    private int[] getNumberOfNeuronsPerLayer()
+    {
+        int[] numberOfNeuronsPerLayer = new int[getNumberOfLayers()];
+        final int inputLayer = 0;
+        final int outputLayer = numberOfNeuronsPerLayer.length - 1;
+        numberOfNeuronsPerLayer[inputLayer] = 16;
+        numberOfNeuronsPerLayer[outputLayer] = 7;
+        int hiddenLayer = 1;
+        for (Integer numberOfNeurons : netSettings.getNeuronsNumberOfHiddenLayers())
         {
-            neurons[i] = v;
-            i++;
+            numberOfNeuronsPerLayer[hiddenLayer] = numberOfNeurons;
+            hiddenLayer++;
         }
-        return neurons;
+        return numberOfNeuronsPerLayer;
     }
 
     @FXML

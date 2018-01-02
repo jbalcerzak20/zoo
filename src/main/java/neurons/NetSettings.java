@@ -6,23 +6,23 @@ import java.util.List;
 public class NetSettings
 {
     private int numberOfHiddenLayers = 1;
-    private  List<Integer> neurons;
+    private  List<Integer> neuronsNumberOfHiddenLayers;
 
     public NetSettings()
     {
-        neurons = new ArrayList<>();
-        neurons.add(10);
+        neuronsNumberOfHiddenLayers = new ArrayList<>();
+        neuronsNumberOfHiddenLayers.add(10);
     }
 
 
-    public List<Integer> getNeurons()
+    public List<Integer> getNeuronsNumberOfHiddenLayers()
     {
-        return neurons;
+        return neuronsNumberOfHiddenLayers;
     }
 
-    public void setNeurons(List<Integer> neurons)
+    public void setNeuronsNumberOfHiddenLayers(List<Integer> neuronsNumberOfHiddenLayers)
     {
-        this.neurons = neurons;
+        this.neuronsNumberOfHiddenLayers = neuronsNumberOfHiddenLayers;
     }
 
     public int getNumberOfHiddenLayers()

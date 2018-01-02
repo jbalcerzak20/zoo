@@ -59,7 +59,7 @@ public class DialogNetSettings
             if (dialogButton == chooseButton)
             {
                 NetSettings netSettings = new NetSettings();
-                netSettings.setNeurons(netSettingsTemplateController.getNumberOfNeuronsPerLayer());
+                netSettings.setNeuronsNumberOfHiddenLayers(netSettingsTemplateController.getNumberOfNeuronsPerLayer());
                 netSettings.setNumberOfHiddenLayers(netSettingsTemplateController.getNumberOfHiddenLayers());
                 return netSettings;
             }
