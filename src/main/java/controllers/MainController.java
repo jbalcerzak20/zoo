@@ -1,6 +1,7 @@
 package controllers;
 
 import animals.Zwierze;
+import animals.dialog.DialogNetSettings;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -12,7 +13,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import loaders.ZooLoader;
+import neurons.NetSettings;
 import neurons.hidden.Perceptron;
+
+import java.util.Optional;
 
 public class MainController
 {
@@ -69,6 +73,8 @@ public class MainController
     @FXML
     private TryingPerceptronController tryingNeuralNetTabController;
 
+    private NetSettings netSettings;
+
 
     public MainController()
     {
@@ -79,6 +85,7 @@ public class MainController
     public void initialize()
     {
 //        makeInvisibleChartsTabResultTabAndTryingNeuralNetTab();
+        netSettings = new NetSettings();
 
         uczenieWykres.getXAxis().setLabel("t");
         uczenieWykres.getYAxis().setLabel("u(t)");
@@ -210,8 +217,9 @@ public class MainController
             protected Void call() throws Exception
             {
                 teach();
-                updateProgress(1, 1);
                 chartNotRendered = true;
+                updateProgress(1, 1);
+
                 return null;
             }
         };
@@ -220,6 +228,10 @@ public class MainController
         Thread teachThread = new Thread(task);
         teachThread.start();
 
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Zakończono testowanie");
+//        alert.setHeaderText("Zakończono Uczenie");
+//        alert.show();
     }
 
     public void chartsTabOnSelectionChanged()
@@ -254,14 +266,14 @@ public class MainController
 
     private void teach()
     {
-        int iloscWarstw = 3;
+        int iloscWarstw = netSettings.getNumberOfHiddenLayers() + 2;
         perceptron = new Perceptron();
         perceptron.setZwierzes(zwierzes);
         perceptron.setInitLayers(iloscWarstw);
 
         wynikiText.clear();
 
-        int[] neurons = {16, 10, 7};
+        int[] neurons = getNeurons();
         perceptron.setInitNeurons(neurons);
 
         perceptron.podzielDane(70, 20, 11);
@@ -280,6 +292,19 @@ public class MainController
         passLearnedPerceptronToTryingNeuralNetTab();
     }
 
+    private int[] getNeurons()
+    {
+        int[] neurons = new int[netSettings.getNumberOfHiddenLayers() + 2];
+        neurons[0] = 16;
+        neurons[neurons.length - 1] = 7;
+        int i = 1;
+        for (Integer v : netSettings.getNeurons())
+        {
+            neurons[i] = v;
+            i++;
+        }
+        return neurons;
+    }
 
     @FXML
     public void testujAction(ActionEvent e)
@@ -299,5 +324,10 @@ public class MainController
         this.tryingNeuralNetTabController.setPerceptron(this.perceptron);
     }
 
-
+    public void openNetSettings()
+    {
+        DialogNetSettings dialogNetSettings = new DialogNetSettings(netSettings);
+        Optional<NetSettings> settings = dialogNetSettings.showAndGetResult();
+        netSettings = settings.orElse(netSettings);
+    }
 }
