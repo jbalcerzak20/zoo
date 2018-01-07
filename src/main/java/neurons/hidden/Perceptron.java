@@ -404,9 +404,6 @@ public class Perceptron {
 
     public void setZwierzes(ObservableList<Zwierze> zwierzes) {
         this.zwierzes = zwierzes;
-        Collections.shuffle(zwierzes);
-        Collections.shuffle(zwierzes);
-        Collections.shuffle(zwierzes);
     }
 
     public int getIloscDanychUczacych() {

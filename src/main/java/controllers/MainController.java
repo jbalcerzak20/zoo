@@ -68,7 +68,10 @@ public class MainController
     private boolean chartNotRendered = false;
 
     @FXML
-    ProgressIndicator progressIndicator;
+    private Button testButton;
+
+    @FXML
+    private ProgressIndicator progressIndicator;
 
     @FXML
     private TryingPerceptronController tryingNeuralNetTabController;
@@ -219,6 +222,8 @@ public class MainController
                 teach();
                 chartNotRendered = true;
                 updateProgress(1, 1);
+                testButton.setDisable(false);
+
 
                 return null;
             }
@@ -264,7 +269,7 @@ public class MainController
         }
     }
 
-    private void teach()
+    private synchronized void teach()
     {
         int iloscWarstw = getNumberOfLayers();
         perceptron = new Perceptron();
@@ -276,7 +281,7 @@ public class MainController
         int[] neurons = getNumberOfNeuronsPerLayer();
         perceptron.setInitNeurons(neurons);
 
-        perceptron.podzielDane(70, 20, 11);
+        perceptron.podzielDane(63, 21, 16);
         perceptron.setMaxIteration(Integer.parseInt(iteracjeText.getText()));
         perceptron.setEpsilon(0.00000001);
         perceptron.setLt(Double.parseDouble(ltText.getText()));
@@ -290,6 +295,7 @@ public class MainController
 
 
         passLearnedPerceptronToTryingNeuralNetTab();
+
     }
 
     private int getNumberOfLayers()
@@ -319,10 +325,12 @@ public class MainController
         perceptron.tests();
         wynikiText.appendText("Wyniki testowania perceptronu: \n");
         wynikiText.appendText(perceptron.getTestoweSummary());
-        wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscTestowychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychTestowych()) + "\n");
+        String message = "Poprawne: " + perceptron.getIloscTestowychPoprawnych() + "/" + String.valueOf(perceptron.getIloscDanychTestowych());
+        wynikiText.appendText(message + "\n");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Zakończono testowanie");
         alert.setHeaderText("Zakończono testowanie");
+        alert.setContentText(message);
         alert.show();
     }
 
