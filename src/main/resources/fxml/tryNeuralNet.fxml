@@ -11,7 +11,12 @@
 
 <VBox fx:id="mainVBox" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TryingPerceptronController">
    <children>
-      <HBox VBox.vgrow="ALWAYS">
+      <Label fx:id="startInfoLabel" text="Najpierw należy nauczyć sieć">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Label>
+      <HBox fx:id="mainForm" VBox.vgrow="ALWAYS">
          <children>
             <VBox spacing="10.0">
                <children>

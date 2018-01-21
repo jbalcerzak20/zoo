@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import neurons.hidden.Perceptron;
 
@@ -17,7 +18,10 @@ import java.text.MessageFormat;
 public class TryingPerceptronController
 {
     @FXML
-    private VBox mainVBox;
+    private Label startInfoLabel;
+
+    @FXML
+    private HBox mainForm;
 
     @FXML
     private CheckBox hairCheckBox;
@@ -79,14 +83,20 @@ public class TryingPerceptronController
 
     public void initialize()
     {
+        this.mainForm.setVisible(false);
         prepareNumberOfLegsComboBox();
         resultOfGuessingLabel.setText("");
 
     }
 
-    public VBox getMainVBox()
+    public HBox getMainForm()
     {
-        return mainVBox;
+        return mainForm;
+    }
+
+    public Label getStartInfoLabel()
+    {
+        return startInfoLabel;
     }
 
     public void setPerceptron(Perceptron perceptron)

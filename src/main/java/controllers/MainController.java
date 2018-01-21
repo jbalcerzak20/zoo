@@ -109,7 +109,7 @@ public class MainController
     {
         wykresyTab.getContent().setVisible(false);
         wynikiTab.getContent().setVisible(false);
-        tryingNeuralNetTabController.getMainVBox().setVisible(false);
+//        /tryingNeuralNetTabController.getMainVBox().setVisible(false);
     }
 
     private void testujWszystko()
@@ -291,7 +291,8 @@ public class MainController
 
         wynikiText.appendText("Wyniki uczenia perceptronu: \n");
         wynikiText.appendText(perceptron.getUczaceSummary());
-        wynikiText.appendText("Poprawne: " + String.valueOf(perceptron.getIloscUczacychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychUczacych()) + "\n");
+        wynikiText.appendText("\nIlość generacji: " + perceptron.getGeneration() + "\n\n");
+//        wynikiText.appendText("\nPoprawne: " + String.valueOf(perceptron.getIloscUczacychPoprawnych()) + "/" + String.valueOf(perceptron.getIloscDanychUczacych()) + "\n");
 
 
         passLearnedPerceptronToTryingNeuralNetTab();
@@ -336,6 +337,8 @@ public class MainController
 
     private void passLearnedPerceptronToTryingNeuralNetTab()
     {
+        this.tryingNeuralNetTabController.getMainForm().setVisible(true);
+        this.tryingNeuralNetTabController.getStartInfoLabel().setVisible(false);
         this.tryingNeuralNetTabController.setPerceptron(this.perceptron);
     }
 
