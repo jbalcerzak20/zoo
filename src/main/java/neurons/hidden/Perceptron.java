@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Perceptron {
@@ -24,6 +23,7 @@ public class Perceptron {
     private double epsilon;
     private double lt;
     private double ltm;
+    private int generation;
 
     public Perceptron() {
         layers = new ArrayList<>();
@@ -223,7 +223,7 @@ public class Perceptron {
 
                 passRecordThroughNet();
 
-                suma = coutErrors(suma);
+                suma = countErrors(suma);
 
                 daneUczace.get(x).setWy(layers.get(layerCount - 1).getOutputs(layers.get(layerCount - 1)));
 
@@ -235,7 +235,7 @@ public class Perceptron {
 
             if (verificateStop()) {
 //                System.out.println("Verify stop");
-//                break;
+                break;
             }
 
             if (epsilonStop()) {
@@ -246,7 +246,7 @@ public class Perceptron {
 //            System.out.println(t+" : "+summaryErrors.get(summaryErrors.size() - 1));
             t++;
         }
-
+        this.generation = t;
 //        System.out.println(t);
     }
 
@@ -265,7 +265,7 @@ public class Perceptron {
         for (int x = 0; x < iloscDanychTestowych; x++) {
             putToLayers(daneTestowe.get(x).getWe(), daneTestowe.get(x).getWy());
             passRecordThroughNet();
-            suma = coutErrors(suma);
+            suma = countErrors(suma);
             daneTestowe.get(x).setWy(getOutputs());
         }
 
@@ -295,7 +295,7 @@ public class Perceptron {
         }
     }
 
-    private double coutErrors(double suma)
+    private double countErrors(double suma)
     {
         for (int i = layers.size() - 1; i >= 0; i--) {
             layers.get(i).setErrors();
@@ -356,13 +356,18 @@ public class Perceptron {
 
             putToLayers(daneWeryfikacyjne.get(x).getWe(), daneWeryfikacyjne.get(x).getWy());
 
-            for (int i = 0; i < layers.size(); i++) {
-                layers.get(i).setNextNeuronInner();
-            }
-            for (int i = layers.size() - 1; i >= 0; i--) {
-                layers.get(i).setErrors();
-                suma += layers.get(i).getLayerError();
-            }
+//            for (int i = 0; i < layers.size(); i++) {
+//                layers.get(i).setNextNeuronInner();
+//            }
+//            for (int i = layers.size() - 1; i >= 0; i--) {
+//                layers.get(i).setErrors();
+//                suma += layers.get(i).getLayerError();
+//            }
+            putToLayers(daneUczace.get(x).getWe(), daneUczace.get(x).getOczekiwane());
+
+            passRecordThroughNet();
+
+            suma = countErrors(suma);
             daneWeryfikacyjne.get(x).setWy(layers.get(layers.size() - 1).getOutputs(layers.get(layers.size() - 1)));
         }
 
@@ -388,6 +393,11 @@ public class Perceptron {
                 return true;
         }
         return false;
+    }
+
+    public int getGeneration()
+    {
+        return generation;
     }
 
     public List<Layer> getLayers() {
